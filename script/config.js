@@ -83,7 +83,7 @@ if(typeof CNPTV_CONF!=='undefined'&&CNPTV_CONF){
         "logo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Cricket_West_Indies_flag_2017.svg/1920px-Cricket_West_Indies_flag_2017.svg.png"
       },
       "poster": "https://img10.hotstar.com/image/upload/f_auto,q_90,w_1920/sources/r1/cms/prod/9280/1791259109280-i",
-      "date": "11 OCT 2026, 07:00 PM",
+      "date": "14 OCT 2026, 07:00 PM",
       "watchUrl": "/home/live/ind-vs-wi.html"
     }
   ];
