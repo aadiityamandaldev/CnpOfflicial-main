@@ -1,7 +1,7 @@
 var CNPTV_CONF = {
   siteName: "CnpTV",
 
-  build: "18",
+  build: "19",
   forceScrollAnimation: true,
 
   heroSlideDuration: 10000,
