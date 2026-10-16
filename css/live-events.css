@@ -578,3 +578,109 @@
   .news-card-img { transition: none !important; }
   .event-match-skeleton { animation: none; }
 }
+
+/* Final usability pass: compact cards, factual headers, and a clean responsive navigation. */
+:root { --home-card-width: clamp(242px, 25.5vw, 332px); }
+
+#sports .section-hd { align-items:center !important; margin-bottom:14px !important; }
+#sports .section-hd-kicker { min-height:12px; margin-bottom:6px; color:#8fa8b5; font-size:.56rem; font-weight:800; letter-spacing:.1em; }
+#sports .section-hd-kicker::before { display:none; }
+#sports .section-live-status { color:var(--home-aqua); }
+#sports .section-hd-meta,
+#sports .event-count { display:none; }
+
+.event-match-card { display:block; min-height:280px; color:var(--home-text); text-decoration:none; cursor:pointer; }
+.event-match-card:focus-visible { outline:2px solid var(--home-aqua); outline-offset:3px; }
+.event-match-visual { min-height:177px; padding:10px 12px 7px; }
+.event-match-name { margin:6px 0 3px; font-size:.78rem; }
+.event-sport-chip,
+.event-status-chip { min-height:22px; padding-inline:8px; font-size:.53rem; }
+.event-teams-row { grid-template-columns:1fr 35px 1fr; gap:5px; }
+.event-team { gap:5px; }
+.event-team-logo { width:61px; }
+.event-team-name { font-size:.68rem; }
+.event-versus { width:35px; height:35px; font-size:.6rem; }
+.event-match-info { min-height:103px; padding:10px 12px 11px; }
+.event-league { min-height:16px; font-size:.72rem; }
+.event-meta { gap:3px; font-size:.53rem; }
+.event-meta time { font-size:.61rem; }
+.event-time-state { color:#9baeba; font-size:.53rem; font-weight:850; letter-spacing:.1em; text-transform:uppercase; }
+.event-time-state.upcoming { color:#f5d45b; }
+.event-time-state.live { color:var(--home-aqua); }
+.event-live-duration { color:var(--home-aqua) !important; font-variant-numeric:tabular-nums; }
+.event-schedule-time { color:#ced8df !important; }
+.event-watch-label { min-height:32px; padding:0 9px; font-size:.57rem; }
+.event-match-skeleton { min-height:280px; }
+.event-match-skeleton span:nth-child(1) { height:177px; }
+
+/* Header: normal desktops get a tidy pill navigation; tablets and phones get a clean menu. */
+header {
+  min-height:72px;
+  display:flex;
+  grid-template-columns:none;
+  gap:16px;
+  padding:10px clamp(16px,4vw,56px);
+  border-bottom-color:rgba(169,241,223,.14);
+  background:rgba(7,14,21,.9);
+}
+.logo { grid-column:auto; justify-self:auto; margin-right:auto; font-size:clamp(1.05rem,1.5vw,1.34rem); }
+.header-nav { grid-column:auto; justify-self:auto; gap:3px; padding:4px; border:1px solid rgba(220,240,247,.11); border-radius:12px; background:rgba(255,255,255,.028); }
+.header-nav a { padding:8px 9px; border-radius:8px; color:#aebdc8; font-size:.71rem; font-weight:720; white-space:nowrap; }
+.header-nav a:hover,
+.header-nav a:focus-visible { color:#effbf8; background:rgba(169,241,223,.11); outline:0; }
+.header-nav .sign-in { color:#d7e7ed; font-weight:760; }
+.header-nav .subscribe { padding:8px 13px; border-radius:8px; color:#06211c; background:var(--home-aqua); font-size:.66rem; }
+.header-nav .subscribe:hover { color:#06211c; background:var(--home-aqua-strong); }
+
+/* Remove the large unused footer groups and turn the legal area into a deliberate compact bottom bar. */
+.site-foot { margin-top:0 !important; padding:44px clamp(1rem,5vw,3rem) 20px !important; border-top-color:var(--home-line) !important; background:#080e14 !important; }
+.site-foot-container { max-width:1180px; grid-template-columns:minmax(230px,1.15fr) minmax(280px,.85fr) !important; gap:34px !important; }
+.site-foot-desc { max-width:370px; }
+.site-foot-nav { grid-template-columns:repeat(2,minmax(130px,1fr)) !important; gap:20px 34px !important; }
+.foot-nav-title { margin-bottom:10px !important; color:#edf6f8 !important; }
+.site-foot-nav a { padding:4px 0 !important; font-size:.79rem !important; }
+.site-foot-bottom { max-width:1180px; display:flex; align-items:center; justify-content:space-between; gap:15px; margin:34px auto 0 !important; padding-top:17px !important; text-align:left !important; }
+.site-foot-copy { margin:0 !important; color:#91a4b1 !important; font-size:.73rem !important; letter-spacing:0 !important; text-transform:none !important; }
+.site-foot-legal { justify-content:flex-end !important; gap:15px !important; }
+.site-foot-legal a { font-size:.72rem !important; }
+
+@media (max-width:1100px) {
+  header { min-height:62px; }
+  .header-nav { display:none !important; }
+  .hamburger { display:flex !important; grid-column:auto; width:38px; height:38px; margin-left:auto; padding:7px; order:3; }
+  .logo { margin-right:0; order:1; }
+  .mobile-menu { z-index:50; }
+}
+
+@media (max-width:760px) {
+  :root { --home-card-width:min(70vw,278px); }
+  #sports > section { padding:1.85rem 0 !important; }
+  #sports .section-hd { margin-bottom:12px !important; }
+  #sports .section-hd-title { font-size:1.33rem !important; }
+  #sports .section-hd-kicker { font-size:.5rem; }
+  #sports .willow-live-track,
+  #sports .fancode-track,
+  #sports .world-sports-track,
+  #sports .sony-liv-track,
+  #sports .live-events-track,
+  #sports .news-track { gap:10px; }
+  .event-match-card,
+  .event-match-skeleton { min-height:268px; }
+  .event-match-visual { min-height:169px; }
+  .event-match-skeleton span:nth-child(1) { height:169px; }
+  .event-team-logo { width:58px; }
+  .event-match-info { min-height:99px; }
+  .event-watch-label { min-height:30px; padding-inline:8px; font-size:.54rem; }
+  .site-foot { padding-top:34px !important; }
+  .site-foot-container { grid-template-columns:1fr !important; gap:26px !important; }
+  .site-foot-nav { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:22px !important; }
+  .site-foot-bottom { flex-direction:column; align-items:flex-start; gap:12px; margin-top:28px !important; }
+  .site-foot-legal { justify-content:flex-start !important; gap:12px !important; }
+}
+
+@media (max-width:390px) {
+  :root { --home-card-width:min(72vw,266px); }
+  .event-team-logo { width:54px; }
+  .event-watch-label { padding-inline:7px; }
+  .site-foot-legal { flex-wrap:wrap; }
+}
