@@ -181,8 +181,6 @@
       var m = matches[i];
 
       var status     = statusInfo(pick(m, ['status', 'matchStatus', 'state', 'status_display']));
-      var isLive     = status.className === 'live';
-
       var id         = String(pick(m, ['id', 'matchId', 'match_id', 'matchID', 'stream_id']));
       var streamUrl  = getStreamUrl(m);
       var rawTitle   = buildTitle(m);
@@ -193,7 +191,7 @@
       var time       = escapeHtml(pick(m, ['time', 'startTime', 'date', 'matchTime', 'scheduled_time', 'start_time']));
 
       var watchHtml = '';
-      if (isLive && id) {
+      if (id) {
         watchHtml = '<div class="md-actions">' +
           '<a class="md-watch-btn" href="' + escapeHtml(buildPlayerUrl(id, streamUrl)) + '" aria-label="Watch ' + imgAlt + '">' +
           '<span class="md-watch-btn-icon" aria-hidden="true">&#9654;</span>WATCH NOW</a></div>';
@@ -239,9 +237,31 @@
   }
 
   function getJSON(url) {
-    return fetch(stamp(url), { cache: 'no-store' }).then(function (res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
+    return new Promise(function (resolve, reject) {
+      var controller = typeof window.AbortController === 'function' ? new window.AbortController() : null;
+      var options = { cache: 'no-store' };
+      var settled = false;
+      var timeout;
+
+      if (controller) options.signal = controller.signal;
+      function finish(error, payload) {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timeout);
+        if (error) reject(error); else resolve(payload);
+      }
+
+      timeout = window.setTimeout(function () {
+        if (controller) controller.abort();
+        finish(new Error('Request timed out'));
+      }, 12000);
+
+      fetch(stamp(url), options)
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (payload) { finish(null, payload); }, function (error) { finish(error); });
     });
   }
 
@@ -252,7 +272,8 @@
       return;
     }
 
-    renderSkeletons(6);
+    // Keep already-rendered cards visible during background refreshes.
+    if (!track.querySelector('.md-card')) renderSkeletons(6);
 
     getJSON(API_URL)
       .catch(function () {
@@ -277,7 +298,6 @@
   if (arrowLeft)  arrowLeft.addEventListener('click',  function (e) { e.stopPropagation(); track.scrollBy({ left: -scrollAmt(), behavior: 'smooth' }); });
   if (arrowRight) arrowRight.addEventListener('click', function (e) { e.stopPropagation(); track.scrollBy({ left:  scrollAmt(), behavior: 'smooth' }); });
 
-  var section = document.getElementById('willow-live');
   var loaded = false;
   var timer = null;
 
@@ -290,14 +310,8 @@
     }, 60000);
   }
 
-  if ('IntersectionObserver' in window && section) {
-    var obs = new IntersectionObserver(function (entries) {
-      if (entries[0].isIntersecting) { load(); obs.disconnect(); }
-    }, { rootMargin: '200px' });
-    obs.observe(section);
-  } else {
-    load();
-  }
+  // Fetch immediately. Some mobile/desktop-mode browsers do not reliably fire the old observer.
+  load();
 
   window.addEventListener('beforeunload', function () { if (timer) window.clearInterval(timer); });
 })();
