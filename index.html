@@ -112,7 +112,7 @@
   <link rel="dns-prefetch" href="https://images.fancode.com">
   <link rel="dns-prefetch" href="https://origin-staticv2.sonyliv.com">
 
-  <meta name="cnptv-build" content="18">
+  <meta name="cnptv-build" content="20">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -367,7 +367,7 @@
     <link rel="stylesheet" href="css/world-sports.css?v=17">
     <link rel="stylesheet" href="css/fancode.css?v=17">
     <link rel="stylesheet" href="css/main.css?v=17">
-    <link rel="stylesheet" href="css/live-events.css?v=19">
+    <link rel="stylesheet" href="css/live-events.css?v=20">
   </noscript>
 </head>
 <body id="top">
@@ -430,10 +430,9 @@
     <section class="live-events-section" id="footballSection" aria-labelledby="footballSectionTitle">
       <div class="section-hd">
         <div class="section-hd-copy">
-          <p class="section-hd-kicker">Live schedule</p>
+          <p class="section-hd-kicker section-live-status" id="footballStatus" aria-live="polite">Loading events</p>
           <h2 class="section-hd-title" id="footballSectionTitle">Football <em>24×7</em></h2>
         </div>
-        <span class="event-count" id="footballCount" aria-live="polite">Loading</span>
       </div>
       <div class="live-events-carousel-wrapper">
         <button class="live-events-arrow previous" id="footballPrevious" type="button" aria-label="Previous football events">&#10094;</button>
@@ -450,10 +449,9 @@
     <section class="live-events-section" id="cricketSection" aria-labelledby="cricketSectionTitle">
       <div class="section-hd">
         <div class="section-hd-copy">
-          <p class="section-hd-kicker">Live schedule</p>
+          <p class="section-hd-kicker section-live-status" id="cricketStatus" aria-live="polite">Loading events</p>
           <h2 class="section-hd-title" id="cricketSectionTitle">Cricket <em>24×7</em></h2>
         </div>
-        <span class="event-count" id="cricketCount" aria-live="polite">Loading</span>
       </div>
       <div class="live-events-carousel-wrapper">
         <button class="live-events-arrow previous" id="cricketPrevious" type="button" aria-label="Previous cricket events">&#10094;</button>
@@ -470,10 +468,9 @@
     <section class="willow-live-section" id="willow-live" aria-labelledby="willowSectionTitle">
       <div class="section-hd">
         <div class="section-hd-copy">
-          <p class="section-hd-kicker">Always on</p>
+          <p class="section-hd-kicker section-live-status" id="willowStatus" aria-live="polite">Loading events</p>
           <h2 class="section-hd-title" id="willowSectionTitle">Willow Cricbuzz <em>24×7</em></h2>
         </div>
-        <span class="section-hd-meta">Live cricket</span>
       </div>
       <div class="willow-live-carousel-wrapper">
         <button class="carousel-arrow arrow-left" id="willowLiveArrowLeft" type="button" aria-label="Previous Willow Cricbuzz events">&#10094;</button>
@@ -486,10 +483,9 @@
     <section class="fancode-section" id="fancodeSection" aria-labelledby="fancodeSectionTitle">
       <div class="section-hd">
         <div class="section-hd-copy">
-          <p class="section-hd-kicker">Curated matches</p>
+          <p class="section-hd-kicker section-live-status" id="fancodeStatus" aria-live="polite">Loading events</p>
           <h2 class="section-hd-title" id="fancodeSectionTitle">FanCode <em>24×7</em></h2>
         </div>
-        <span class="section-hd-meta">Live events</span>
       </div>
       <div class="fancode-carousel-wrapper">
         <button class="fancode-arrow arrow-left" id="fancodeArrowLeft" type="button" aria-label="Previous FanCode events">&#10094;</button>
@@ -502,10 +498,9 @@
     <section class="world-sports-section" id="worldSportsSection" aria-labelledby="worldSportsSectionTitle">
       <div class="section-hd">
         <div class="section-hd-copy">
-          <p class="section-hd-kicker">Around the world</p>
+          <p class="section-hd-kicker section-live-status" id="worldSportsStatus" aria-live="polite">Loading events</p>
           <h2 class="section-hd-title" id="worldSportsSectionTitle">World Sports</h2>
         </div>
-        <span class="section-hd-meta">Live sports</span>
       </div>
       <div class="world-sports-carousel-wrapper">
         <button class="world-sports-arrow arrow-left" id="worldSportsArrowLeft" type="button" aria-label="Previous World Sports events">&#10094;</button>
@@ -518,10 +513,9 @@
     <section class="sony-liv-section" id="sonyLivSection" aria-labelledby="sonySectionTitle">
       <div class="section-hd">
         <div class="section-hd-copy">
-          <p class="section-hd-kicker">Featured events</p>
+          <p class="section-hd-kicker section-live-status" id="sonyLivStatus" aria-live="polite">Loading events</p>
           <h2 class="section-hd-title" id="sonySectionTitle">Sony LIV Events</h2>
         </div>
-        <span class="section-hd-meta">Premium picks</span>
       </div>
       <div class="sony-liv-carousel-wrapper">
         <button class="sony-liv-arrow arrow-left" id="sonyLivArrowLeft" type="button" aria-label="Previous Sony LIV events">&#10094;</button>
@@ -534,10 +528,9 @@
     <section class="news-section" id="newsSection" aria-labelledby="newsSectionTitle">
       <div class="section-hd">
         <div class="section-hd-copy">
-          <p class="section-hd-kicker">Latest stories</p>
+          <p class="section-hd-kicker section-live-status">10 latest stories</p>
           <h2 class="section-hd-title" id="newsSectionTitle">Sports News</h2>
         </div>
-        <span class="section-hd-meta">10 latest stories</span>
       </div>
       <div class="news-track" id="landingNewsTrack" aria-live="polite">
         <div class="event-match-skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -580,7 +573,6 @@
         </div>
       </div>
 
-      <!-- Nav columns -->
       <nav class="site-foot-nav" aria-label="Footer navigation">
         <div class="foot-nav-col">
           <h3 class="foot-nav-title">Live Sports</h3>
@@ -592,36 +584,17 @@
           <a href="#sonyLivSection">Sony LIV Events</a>
         </div>
         <div class="foot-nav-col">
-          <h3 class="foot-nav-title">Platforms</h3>
-          <a href="/Willow/">Willow TV</a>
-          <a href="/player/sony">Sony Player</a>
-          <a href="/Hotstar/">Hotstar</a>
-          <a href="/Fox/">Fox Sports</a>
-        </div>
-        <div class="foot-nav-col">
-          <h3 class="foot-nav-title">Languages</h3>
-          <a href="/English/">English</a>
-          <a href="/Hindi/">Hindi</a>
-          <a href="/Bangla/">Bangla</a>
-          <a href="/Tamil/">Tamil</a>
-          <a href="/Telugu/">Telugu</a>
-          <a href="/Kannada/">Kannada</a>
-        </div>
-        <div class="foot-nav-col">
-          <h3 class="foot-nav-title">Legal & Info</h3>
-          <a href="/news/">Latest News</a>
-          <a href="/terms.html">Terms of Service</a>
-          <a href="/privacy.html">Privacy Policy</a>
-          <a href="/disclaimer.html">Disclaimer</a>
-          <a href="/dmca.html">DMCA</a>
+          <h3 class="foot-nav-title">CnpTV</h3>
+          <a href="/news/">Latest Sports News</a>
           <a href="/Feedback/">Contact Us</a>
+          <a href="https://t.me/Cnp_action_bot" target="_blank" rel="noopener noreferrer">Telegram</a>
         </div>
       </nav>
     </div>
 
     <!-- Bottom bar -->
     <div class="site-foot-bottom">
-      <p class="site-foot-copy">&copy; <span id="current-year"></span> CnpTV (sayan.info). All rights reserved.</p>
+      <p class="site-foot-copy">&copy; <span id="current-year"></span> CnpTV <span aria-hidden="true">•</span> All rights reserved.</p>
       <div class="site-foot-legal">
         <a href="/terms.html">Terms</a>
         <a href="/privacy.html">Privacy</a>
