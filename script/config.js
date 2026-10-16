@@ -1,14 +1,17 @@
 var CNPTV_CONF = {
   siteName: "CnpTV",
 
-  build: "12",
+  build: "18",
   forceScrollAnimation: true,
 
   heroSlideDuration: 10000,
   maxHeroMatches: 8,
   heroFeedUrl: "",
+  eventRefreshMs: 300000,
 
   apis: {
+    football: "https://sonujson-v5.pages.dev/Data/events/football.json",
+    cricket: "https://sonujson-v5.pages.dev/Data/events/cricket.json",
     willow: "https://sonujson-v5.pages.dev/Data/willow.json",
     willowLive: "https://sonujson-v5.pages.dev/Data/willow.json",
     willowSnapshot: "",
