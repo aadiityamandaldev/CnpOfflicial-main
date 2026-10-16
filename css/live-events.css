@@ -684,3 +684,15 @@ header {
   .event-watch-label { padding-inline:7px; }
   .site-foot-legal { flex-wrap:wrap; }
 }
+
+/* FanCode language actions: compact, side-by-side controls for every event state. */
+#fancodeSection .md-footer { align-items:center; }
+#fancodeSection .md-actions { flex-wrap:nowrap; gap:4px; max-width:58%; overflow-x:auto; scrollbar-width:none; }
+#fancodeSection .md-actions::-webkit-scrollbar { display:none; }
+#fancodeSection .md-watch-btn { min-height:25px; gap:4px; padding:4px 6px; border-radius:5px; font-size:.47rem; letter-spacing:.035em; box-shadow:none; }
+#fancodeSection .md-watch-btn-icon { font-size:.45rem; }
+#fancodeSection .md-watch-language { padding-left:4px; border-left:1px solid rgba(7,35,31,.2); font-size:.46rem; font-weight:900; }
+#fancodeSection .md-soon { min-height:24px; padding:4px 7px; font-size:.48rem; }
+
+/* A page must remain scrollable even if a browser supplies an incomplete observer implementation. */
+html, body { overflow-y:auto; }
