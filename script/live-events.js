@@ -11,6 +11,8 @@
   var config = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
   var apis = config.apis || {};
   var refreshEvery = Number(config.eventRefreshMs) || 300000;
+  var requestTimeout = 12000;
+  var cachePrefix = 'cnptv-home-events-v2:';
   var sections = [
     {
       key: 'football',
@@ -111,6 +113,101 @@
     if (Array.isArray(payload.matches)) return payload.matches;
     if (payload.data && Array.isArray(payload.data.events)) return payload.data.events;
     return [];
+  }
+
+  function presentationEvent(item) {
+    var event = item && item.event || {};
+    return {
+      id: String(item && item.id || ''),
+      title: String(item && item.title || event.name || ''),
+      slug: String(item && item.slug || ''),
+      status: normaliseStatus(item),
+      event: {
+        name: String(event.name || item && item.title || ''),
+        category: String(event.category || ''),
+        teamA: String(event.teamA || ''),
+        teamB: String(event.teamB || ''),
+        teamAFlag: safeImageUrl(event.teamAFlag || event.teamALogo || event.teamAImage || ''),
+        teamBFlag: safeImageUrl(event.teamBFlag || event.teamBLogo || event.teamBImage || ''),
+        startTimeIST: String(event.startTimeIST || event.startTimeUTC || item && (item.startTime || item.start_time) || '')
+      }
+    };
+  }
+
+  function prepareEvents(payload) {
+    return extractEvents(payload)
+      .filter(function (item) { return item && typeof item === 'object'; })
+      .map(presentationEvent)
+      .filter(function (item) { return item.title || item.event.name; })
+      .sort(function (left, right) {
+        return statusRank(left) - statusRank(right) || startTimestamp(left) - startTimestamp(right);
+      });
+  }
+
+  function cacheKey(key) {
+    return cachePrefix + key;
+  }
+
+  function readCachedEvents(key) {
+    try {
+      var stored = window.localStorage.getItem(cacheKey(key));
+      if (!stored) return [];
+      var parsed = JSON.parse(stored);
+      return parsed && Array.isArray(parsed.events) ? prepareEvents(parsed.events) : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function writeCachedEvents(key, events) {
+    try {
+      window.localStorage.setItem(cacheKey(key), JSON.stringify({ savedAt: Date.now(), events: events }));
+    } catch (error) {
+      /* Private browsing or storage limits should never block the schedule. */
+    }
+  }
+
+  function fetchJsonWithTimeout(url) {
+    if (!window.AbortController) {
+      return fetch(url, { cache: 'no-store', headers: { Accept: 'application/json' } })
+        .then(function (response) {
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          return response.json();
+        });
+    }
+
+    var controller = new AbortController();
+    var timeout = window.setTimeout(function () { controller.abort(); }, requestTimeout);
+
+    return fetch(url, {
+      cache: 'no-store',
+      headers: { Accept: 'application/json' },
+      signal: controller.signal
+    })
+      .then(function (response) {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.json();
+      })
+      .then(function (payload) {
+        window.clearTimeout(timeout);
+        return payload;
+      }, function (error) {
+        window.clearTimeout(timeout);
+        throw error;
+      });
+  }
+
+  function renderEvents(track, count, label, events) {
+    if (!events.length) {
+      renderEmpty(track, label);
+      if (count) count.textContent = '0 events';
+      return false;
+    }
+
+    track.innerHTML = events.map(function (item) { return renderCard(item, label); }).join('');
+    if (count) count.textContent = events.length + (events.length === 1 ? ' event' : ' events');
+    setImageFallbacks(track);
+    return true;
   }
 
   function teamMarkup(name, imageUrl) {
@@ -234,47 +331,41 @@
     var count = document.getElementById(sectionInfo.countId);
     var previous = document.getElementById(sectionInfo.previousId);
     var next = document.getElementById(sectionInfo.nextId);
+    var hasCachedSchedule = false;
 
     if (!track) return;
-    track.innerHTML = skeletonMarkup(4);
+    // Skeleton markup is also present in index.html, so slow script downloads never leave a blank rail.
+    if (!track.children.length) track.innerHTML = skeletonMarkup(4);
     addDragScroll(track);
 
     if (previous) previous.addEventListener('click', function () { scrollByCards(track, -1); });
     if (next) next.addEventListener('click', function () { scrollByCards(track, 1); });
 
+    var cachedEvents = readCachedEvents(sectionInfo.key);
+    if (cachedEvents.length) {
+      hasCachedSchedule = renderEvents(track, count, sectionInfo.label, cachedEvents);
+    }
+
     function load() {
       if (!sectionInfo.api) {
-        renderError(track, sectionInfo.label, load);
-        if (count) count.textContent = 'Unavailable';
+        if (!hasCachedSchedule) renderError(track, sectionInfo.label, load);
+        if (count && !hasCachedSchedule) count.textContent = 'Unavailable';
         return;
       }
 
-      fetch(sectionInfo.api, { cache: 'no-store', headers: { Accept: 'application/json' } })
-        .then(function (response) {
-          if (!response.ok) throw new Error('HTTP ' + response.status);
-          return response.json();
-        })
+      fetchJsonWithTimeout(sectionInfo.api)
         .then(function (payload) {
-          var events = extractEvents(payload)
-            .filter(function (item) { return item && typeof item === 'object'; })
-            .sort(function (left, right) {
-              return statusRank(left) - statusRank(right) || startTimestamp(left) - startTimestamp(right);
-            });
-
-          if (!events.length) {
-            renderEmpty(track, sectionInfo.label);
-            if (count) count.textContent = '0 events';
-            return;
-          }
-
-          track.innerHTML = events.map(function (item) { return renderCard(item, sectionInfo.label); }).join('');
-          if (count) count.textContent = events.length + (events.length === 1 ? ' event' : ' events');
-          setImageFallbacks(track);
+          var events = prepareEvents(payload);
+          hasCachedSchedule = renderEvents(track, count, sectionInfo.label, events);
+          if (events.length) writeCachedEvents(sectionInfo.key, events);
         })
         .catch(function (error) {
           if (window.console && console.warn) console.warn('[live-events] ' + sectionInfo.key + ' could not load', error);
-          renderError(track, sectionInfo.label, load);
-          if (count) count.textContent = 'Unavailable';
+          // Keep a previously saved schedule visible instead of replacing it with an error state.
+          if (!hasCachedSchedule) {
+            renderError(track, sectionInfo.label, load);
+            if (count) count.textContent = 'Unavailable';
+          }
         });
     }
 
