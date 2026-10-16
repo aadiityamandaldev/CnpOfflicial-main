@@ -1,9 +1,7 @@
 var CNPTV_CONF = {
   siteName: "CnpTV",
 
-  build: "20",
-  forceScrollAnimation: true,
-
+  build: "22",
   heroSlideDuration: 10000,
   maxHeroMatches: 8,
   heroFeedUrl: "",
