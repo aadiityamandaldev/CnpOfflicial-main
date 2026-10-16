@@ -79,11 +79,36 @@
     track.innerHTML = '<div class="news-feed-message"><strong>News is unavailable right now</strong><span>Please check back in a moment.</span></div>' + renderMoreCard();
   }
 
-  fetch(NEWS_URL, { cache: 'no-store', headers: { Accept: 'application/json' } })
-    .then(function (response) {
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-      return response.json();
-    })
+  function fetchNewsWithTimeout() {
+    return new Promise(function (resolve, reject) {
+      var controller = typeof window.AbortController === 'function' ? new window.AbortController() : null;
+      var options = { cache: 'no-store', headers: { Accept: 'application/json' } };
+      var settled = false;
+      var timeout;
+
+      if (controller) options.signal = controller.signal;
+      function finish(error, payload) {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timeout);
+        if (error) reject(error); else resolve(payload);
+      }
+
+      timeout = window.setTimeout(function () {
+        if (controller) controller.abort();
+        finish(new Error('Request timed out'));
+      }, 12000);
+
+      fetch(NEWS_URL, options)
+        .then(function (response) {
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          return response.json();
+        })
+        .then(function (payload) { finish(null, payload); }, function (error) { finish(error); });
+    });
+  }
+
+  fetchNewsWithTimeout()
     .then(function (payload) {
       var articles = Array.isArray(payload) ? payload : payload && payload.articles;
       if (!Array.isArray(articles) || !articles.length) {
