@@ -112,7 +112,7 @@
   <link rel="dns-prefetch" href="https://images.fancode.com">
   <link rel="dns-prefetch" href="https://origin-staticv2.sonyliv.com">
 
-  <meta name="cnptv-build" content="17">
+  <meta name="cnptv-build" content="18">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -353,7 +353,7 @@
   <script data-cfasync="false">
     (function () {
       var v = Date.now();
-      var files = ["css/willow-live.css", "css/sony-liv.css", "css/world-sports.css", "css/fancode.css", "css/main.css"];
+      var files = ["css/willow-live.css", "css/sony-liv.css", "css/world-sports.css", "css/fancode.css", "css/main.css", "css/live-events.css"];
       var html = "";
       for (var i = 0; i < files.length; i++) {
         html += '<link rel="stylesheet" href="' + files[i] + "?t=" + v + '">';
@@ -367,6 +367,7 @@
     <link rel="stylesheet" href="css/world-sports.css?v=17">
     <link rel="stylesheet" href="css/fancode.css?v=17">
     <link rel="stylesheet" href="css/main.css?v=17">
+    <link rel="stylesheet" href="css/live-events.css?v=18">
   </noscript>
 </head>
 <body id="top">
@@ -381,27 +382,28 @@
     <a href="#top" class="logo" aria-label="CnpTV home"><span class="cnp">Cnp</span><span class="tv">TV</span></a>
     <nav class="header-nav" aria-label="Main navigation">
       <a href="#top">Home</a>
-      <a href="#fancodeSection">FanCode</a>
-      <a href="#worldSportsSection">Sports</a>
-      <a href="#newsSection">News</a>
-      <a href="#sonyLivSection">Sony</a>
+      <a href="#footballSection">Football</a>
+      <a href="#cricketSection">Cricket</a>
       <a href="#willow-live">Willow</a>
+      <a href="#fancodeSection">FanCode</a>
+      <a href="#newsSection">News</a>
       <a href="https://t.me/Cnp_action_bot" class="sign-in" target="_blank" rel="noopener noreferrer">Contact</a>
-      <a href="#willow-live" class="subscribe">Watch Free</a>
+      <a href="#footballSection" class="subscribe">Watch Free</a>
     </nav>
   </header>
 
   <!-- ══════════════════════════════ MOBILE MENU ══════════════════════════════════ -->
   <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
     <a href="#top">Home</a>
+    <a href="#footballSection">Football 24×7</a>
+    <a href="#cricketSection">Cricket 24×7</a>
+    <a href="#willow-live">Willow Cricbuzz</a>
     <a href="#fancodeSection">FanCode</a>
-    <a href="#worldSportsSection">Sports</a>
+    <a href="#worldSportsSection">World Sports</a>
+    <a href="#sonyLivSection">Sony LIV</a>
     <a href="#newsSection">News</a>
-    <a href="#sonyLivSection">Sony Liv</a>
-    <a href="#willow-live">Willow</a>
     <a href="https://t.me/Cnp_action_bot" target="_blank" rel="noopener noreferrer">Contact Us</a>
-    <a href="#worldSportsSection">FIFA 2026</a>
-    <a href="#willow-live" class="subscribe-mobile">Watch Free</a>
+    <a href="#footballSection" class="subscribe-mobile">Watch Free</a>
   </nav>
 
   <!-- ═══════════════════════════ HERO POSTER / SLIDER ════════════════════════════ -->
@@ -424,70 +426,115 @@
   <!-- ════════════════════════════════════ MAIN ═══════════════════════════════════ -->
   <main id="sports" role="main">
 
-    <!-- 1. FanCode -->
-    <section class="fancode-section" id="fancodeSection">
+    <!-- 1. Football 24×7 — supplied football API, front-end presentation only. -->
+    <section class="live-events-section" id="footballSection" aria-labelledby="footballSectionTitle">
       <div class="section-hd">
-        <h2 class="section-hd-title">FanCode</h2>
-        <span class="section-hd-rule" aria-hidden="true"></span>
+        <div class="section-hd-copy">
+          <p class="section-hd-kicker">Live schedule</p>
+          <h2 class="section-hd-title" id="footballSectionTitle">Football <em>24×7</em></h2>
+        </div>
+        <span class="event-count" id="footballCount" aria-live="polite">Loading</span>
       </div>
-      <div class="fancode-carousel-wrapper">
-        <button class="fancode-arrow arrow-left"  id="fancodeArrowLeft"  type="button" aria-label="Scroll left">&#10094;</button>
-        <div class="fancode-track" id="fancodeTrack" tabindex="0"></div>
-        <button class="fancode-arrow arrow-right" id="fancodeArrowRight" type="button" aria-label="Scroll right">&#10095;</button>
+      <div class="live-events-carousel-wrapper">
+        <button class="live-events-arrow previous" id="footballPrevious" type="button" aria-label="Previous football events">&#10094;</button>
+        <div class="live-events-track" id="footballTrack" aria-live="polite"></div>
+        <button class="live-events-arrow next" id="footballNext" type="button" aria-label="Next football events">&#10095;</button>
       </div>
     </section>
 
-    <!-- 2. World Sports -->
-    <section class="world-sports-section" id="worldSportsSection">
+    <!-- 2. Cricket 24×7 — supplied cricket API, front-end presentation only. -->
+    <section class="live-events-section" id="cricketSection" aria-labelledby="cricketSectionTitle">
       <div class="section-hd">
-        <h2 class="section-hd-title">World Sports</h2>
-        <span class="section-hd-rule" aria-hidden="true"></span>
+        <div class="section-hd-copy">
+          <p class="section-hd-kicker">Live schedule</p>
+          <h2 class="section-hd-title" id="cricketSectionTitle">Cricket <em>24×7</em></h2>
+        </div>
+        <span class="event-count" id="cricketCount" aria-live="polite">Loading</span>
       </div>
-      <div class="world-sports-carousel-wrapper">
-        <button class="world-sports-arrow arrow-left"  id="worldSportsArrowLeft"  type="button" aria-label="Scroll left">&#10094;</button>
-        <div class="world-sports-track" id="worldSportsTrack"></div>
-        <button class="world-sports-arrow arrow-right" id="worldSportsArrowRight" type="button" aria-label="Scroll right">&#10095;</button>
+      <div class="live-events-carousel-wrapper">
+        <button class="live-events-arrow previous" id="cricketPrevious" type="button" aria-label="Previous cricket events">&#10094;</button>
+        <div class="live-events-track" id="cricketTrack" aria-live="polite"></div>
+        <button class="live-events-arrow next" id="cricketNext" type="button" aria-label="Next cricket events">&#10095;</button>
       </div>
     </section>
 
-    <!-- 3. Latest Sports News (Horizontal Carousel) -->
-    <section class="news-section" id="newsSection">
+    <!-- 3. Willow Cricbuzz 24×7 -->
+    <section class="willow-live-section" id="willow-live" aria-labelledby="willowSectionTitle">
       <div class="section-hd">
-        <h2 class="section-hd-title">Latest Sports News</h2>
-        <span class="section-hd-rule" aria-hidden="true"></span>
-      </div>
-      <div class="news-track" id="landingNewsTrack">
-        <!-- Skeleton loaders -->
-        <div class="news-card-landing" style="background:linear-gradient(90deg,#13161a 25%,#1a1d21 50%,#13161a 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;min-height:250px;"></div>
-        <div class="news-card-landing" style="background:linear-gradient(90deg,#13161a 25%,#1a1d21 50%,#13161a 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;min-height:250px;"></div>
-        <div class="news-card-landing" style="background:linear-gradient(90deg,#13161a 25%,#1a1d21 50%,#13161a 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;min-height:250px;"></div>
-        <div class="news-card-landing" style="background:linear-gradient(90deg,#13161a 25%,#1a1d21 50%,#13161a 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;min-height:250px;"></div>
-      </div>
-    </section>
-
-    <!-- 4. Sony Liv -->
-    <section class="sony-liv-section" id="sonyLivSection">
-      <div class="section-hd">
-        <h2 class="section-hd-title">Sony Liv Events</h2>
-        <span class="section-hd-rule" aria-hidden="true"></span>
-      </div>
-      <div class="sony-liv-carousel-wrapper">
-        <button class="sony-liv-arrow arrow-left"  id="sonyLivArrowLeft"  type="button" aria-label="Scroll left">&#10094;</button>
-        <div class="sony-liv-track" id="sonyLivTrack"></div>
-        <button class="sony-liv-arrow arrow-right" id="sonyLivArrowRight" type="button" aria-label="Scroll right">&#10095;</button>
-      </div>
-    </section>
-
-    <!-- 5. Willow Cricket -->
-    <section class="willow-live-section" id="willow-live">
-      <div class="section-hd">
-        <h2 class="section-hd-title">Willow Cricket</h2>
-        <span class="section-hd-rule" aria-hidden="true"></span>
+        <div class="section-hd-copy">
+          <p class="section-hd-kicker">Always on</p>
+          <h2 class="section-hd-title" id="willowSectionTitle">Willow Cricbuzz <em>24×7</em></h2>
+        </div>
+        <span class="section-hd-meta">Live cricket</span>
       </div>
       <div class="willow-live-carousel-wrapper">
-        <button class="carousel-arrow arrow-left"  id="willowLiveArrowLeft"  type="button" aria-label="Scroll left">&#10094;</button>
+        <button class="carousel-arrow arrow-left" id="willowLiveArrowLeft" type="button" aria-label="Previous Willow Cricbuzz events">&#10094;</button>
         <div class="willow-live-track" id="willowLiveTrack"></div>
-        <button class="carousel-arrow arrow-right" id="willowLiveArrowRight" type="button" aria-label="Scroll right">&#10095;</button>
+        <button class="carousel-arrow arrow-right" id="willowLiveArrowRight" type="button" aria-label="Next Willow Cricbuzz events">&#10095;</button>
+      </div>
+    </section>
+
+    <!-- 4. FanCode 24×7 -->
+    <section class="fancode-section" id="fancodeSection" aria-labelledby="fancodeSectionTitle">
+      <div class="section-hd">
+        <div class="section-hd-copy">
+          <p class="section-hd-kicker">Curated matches</p>
+          <h2 class="section-hd-title" id="fancodeSectionTitle">FanCode <em>24×7</em></h2>
+        </div>
+        <span class="section-hd-meta">Live events</span>
+      </div>
+      <div class="fancode-carousel-wrapper">
+        <button class="fancode-arrow arrow-left" id="fancodeArrowLeft" type="button" aria-label="Previous FanCode events">&#10094;</button>
+        <div class="fancode-track" id="fancodeTrack" tabindex="0"></div>
+        <button class="fancode-arrow arrow-right" id="fancodeArrowRight" type="button" aria-label="Next FanCode events">&#10095;</button>
+      </div>
+    </section>
+
+    <!-- 5. World Sports -->
+    <section class="world-sports-section" id="worldSportsSection" aria-labelledby="worldSportsSectionTitle">
+      <div class="section-hd">
+        <div class="section-hd-copy">
+          <p class="section-hd-kicker">Around the world</p>
+          <h2 class="section-hd-title" id="worldSportsSectionTitle">World Sports</h2>
+        </div>
+        <span class="section-hd-meta">Live sports</span>
+      </div>
+      <div class="world-sports-carousel-wrapper">
+        <button class="world-sports-arrow arrow-left" id="worldSportsArrowLeft" type="button" aria-label="Previous World Sports events">&#10094;</button>
+        <div class="world-sports-track" id="worldSportsTrack"></div>
+        <button class="world-sports-arrow arrow-right" id="worldSportsArrowRight" type="button" aria-label="Next World Sports events">&#10095;</button>
+      </div>
+    </section>
+
+    <!-- 6. Sony LIV Events -->
+    <section class="sony-liv-section" id="sonyLivSection" aria-labelledby="sonySectionTitle">
+      <div class="section-hd">
+        <div class="section-hd-copy">
+          <p class="section-hd-kicker">Featured events</p>
+          <h2 class="section-hd-title" id="sonySectionTitle">Sony LIV Events</h2>
+        </div>
+        <span class="section-hd-meta">Premium picks</span>
+      </div>
+      <div class="sony-liv-carousel-wrapper">
+        <button class="sony-liv-arrow arrow-left" id="sonyLivArrowLeft" type="button" aria-label="Previous Sony LIV events">&#10094;</button>
+        <div class="sony-liv-track" id="sonyLivTrack"></div>
+        <button class="sony-liv-arrow arrow-right" id="sonyLivArrowRight" type="button" aria-label="Next Sony LIV events">&#10095;</button>
+      </div>
+    </section>
+
+    <!-- 7. News is intentionally the final home-page section. -->
+    <section class="news-section" id="newsSection" aria-labelledby="newsSectionTitle">
+      <div class="section-hd">
+        <div class="section-hd-copy">
+          <p class="section-hd-kicker">Latest stories</p>
+          <h2 class="section-hd-title" id="newsSectionTitle">Sports News</h2>
+        </div>
+        <span class="section-hd-meta">10 latest stories</span>
+      </div>
+      <div class="news-track" id="landingNewsTrack" aria-live="polite">
+        <div class="event-match-skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="event-match-skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="event-match-skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
       </div>
     </section>
 
@@ -529,10 +576,12 @@
       <nav class="site-foot-nav" aria-label="Footer navigation">
         <div class="foot-nav-col">
           <h3 class="foot-nav-title">Live Sports</h3>
-          <a href="#willow-live">Willow Cricket</a>
-          <a href="#sonyLivSection">Sony Liv</a>
+          <a href="#footballSection">Football 24×7</a>
+          <a href="#cricketSection">Cricket 24×7</a>
+          <a href="#willow-live">Willow Cricbuzz</a>
           <a href="#fancodeSection">FanCode</a>
           <a href="#worldSportsSection">World Sports</a>
+          <a href="#sonyLivSection">Sony LIV Events</a>
         </div>
         <div class="foot-nav-col">
           <h3 class="foot-nav-title">Platforms</h3>
@@ -606,86 +655,8 @@
         if (el) el.textContent = 'Recently';
       });
 
-    /* ── Landing Page News Carousel ── */
-    (function () {
-      async function loadLandingNews() {
-        try {
-          const track = document.getElementById('landingNewsTrack');
-          if (!track) return;
+    /* Landing news is loaded by script/landing-news.js. */
 
-          const response = await fetch('/news/data.json', { cache: 'no-cache' });
-          if (!response.ok) return;
-
-          const data = await response.json();
-          const articles = data.articles || [];
-          if (articles.length === 0) return;
-
-          track.innerHTML = '';
-          let validCount = 0;
-          const maxItems = 10;
-          const fallbackImg = 'https://sayan.info/assets/android-chrome-512x512.png';
-
-          articles.forEach(article => {
-            if (validCount >= maxItems) return;
-
-            const img = new Image();
-            img.src = article.image || fallbackImg;
-
-            img.onload = () => {
-              validCount++;
-              const date = new Date(article.pubDate);
-              const exactTime = date.toLocaleTimeString('en-US', {
-                hour: '2-digit', minute: '2-digit', hour12: true
-              });
-
-              const card = document.createElement('a');
-              card.className = 'news-card-landing';
-              card.href = article.link;
-              card.target = '_blank';
-              card.rel = 'noopener noreferrer';
-
-              card.innerHTML = `
-                <img class="news-card-img" src="${img.src}" alt="" loading="lazy">
-                <div class="news-card-body">
-                  <h3 class="news-card-title">${article.title}</h3>
-                  <div class="news-card-time">
-                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    ${exactTime}
-                  </div>
-                </div>`;
-              track.appendChild(card);
-            };
-
-            img.onerror = () => {
-              if (img.src !== fallbackImg) img.src = fallbackImg;
-            };
-          });
-
-          /* "Read More" card appears after images validate */
-          setTimeout(() => {
-            if (validCount > 0) {
-              const more = document.createElement('a');
-              more.className = 'news-read-more';
-              more.href = '/news/';
-              more.innerHTML = `<span>Read More News</span><p>Explore hundreds of latest sports updates</p>`;
-              track.appendChild(more);
-            }
-          }, 1200);
-
-        } catch (e) {
-          console.log('News section: failed to load');
-        }
-      }
-
-      if (document.readyState === 'complete') {
-        loadLandingNews();
-      } else {
-        window.addEventListener('load', loadLandingNews);
-      }
-    })();
   </script>
 </body>
 </html>
