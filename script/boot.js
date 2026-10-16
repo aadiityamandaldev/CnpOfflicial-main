@@ -3,7 +3,7 @@
 
   var STAMP = String(Date.now());
   var FILE_MODE = location.protocol === "file:";
-  var FILES = ["app.js", "live-events.js", "willow-live.js", "fancode.js", "world-sports.js", "sony-liv.js", "landing-news.js", "scroll-anim.js"];
+  var FILES = ["app.js", "live-events.js", "willow-live.js", "fancode.js", "world-sports.js", "sony-liv.js", "platform-status.js", "landing-news.js", "scroll-anim.js"];
   var STARTED = false;
 
   var FALLBACK = {
@@ -12,6 +12,8 @@
     maxHeroMatches: 8,
     heroFeedUrl: "",
     apis: {
+      football: "https://sonujson-v5.pages.dev/Data/events/football.json",
+      cricket: "https://sonujson-v5.pages.dev/Data/events/cricket.json",
       willow: "https://sonujson-v5.pages.dev/Data/willow.json",
       willowLive: "https://sonujson-v5.pages.dev/Data/willow.json",
       willowSnapshot: "",
