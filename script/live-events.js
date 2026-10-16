@@ -166,26 +166,32 @@
   }
 
   function fetchJsonWithTimeout(url) {
-    if (!window.AbortController) {
-      return fetch(url, { cache: 'no-store', headers: { Accept: 'application/json' } }).then(function (response) {
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        return response.json();
-      });
-    }
+    return new Promise(function (resolve, reject) {
+      var controller = typeof window.AbortController === 'function' ? new window.AbortController() : null;
+      var options = { cache: 'no-store', headers: { Accept: 'application/json' } };
+      var settled = false;
+      var timeout;
 
-    var controller = new AbortController();
-    var timeout = window.setTimeout(function () { controller.abort(); }, requestTimeout);
-    return fetch(url, { cache: 'no-store', headers: { Accept: 'application/json' }, signal: controller.signal })
-      .then(function (response) {
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        return response.json();
-      }).then(function (payload) {
+      if (controller) options.signal = controller.signal;
+      function finish(error, payload) {
+        if (settled) return;
+        settled = true;
         window.clearTimeout(timeout);
-        return payload;
-      }, function (error) {
-        window.clearTimeout(timeout);
-        throw error;
-      });
+        if (error) reject(error); else resolve(payload);
+      }
+
+      timeout = window.setTimeout(function () {
+        if (controller) controller.abort();
+        finish(new Error('Request timed out'));
+      }, requestTimeout);
+
+      fetch(url, options)
+        .then(function (response) {
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          return response.json();
+        })
+        .then(function (payload) { finish(null, payload); }, function (error) { finish(error); });
+    });
   }
 
   function teamMarkup(name, imageUrl) {
@@ -228,7 +234,7 @@
     return '<a class="event-match-card event-status-' + status + '" href="' + escapeHtml(eventUrl(sectionInfo, item)) + '" aria-label="View ' + escapeHtml(eventName) + '">' +
       '<div class="event-match-visual"><div class="event-match-topline"><span class="event-sport-chip">' + escapeHtml(category) + '</span>' + statusChip + '</div>' +
       '<h3 class="event-match-name" title="' + escapeHtml(eventName) + '">' + escapeHtml(eventName) + '</h3><div class="event-teams-row">' + teamMarkup(teamA, imageA) + '<span class="event-versus" aria-hidden="true">VS</span>' + teamMarkup(teamB, imageB) + '</div></div>' +
-      '<div class="event-match-info"><p class="event-league" title="' + escapeHtml(league) + '">' + escapeHtml(league) + '</p><div class="event-match-footer">' + timingMarkup(item, status, category) + '<span class="event-watch-label"><span aria-hidden="true">&#9654;</span>View Event</span></div></div></a>';
+      '<div class="event-match-info"><p class="event-league" title="' + escapeHtml(league) + '">' + escapeHtml(league) + '</p><div class="event-match-footer">' + timingMarkup(item, status, category) + '<span class="event-watch-label"><span aria-hidden="true">&#9654;</span>Watch Now</span></div></div></a>';
   }
 
   function skeletonMarkup(count) {
