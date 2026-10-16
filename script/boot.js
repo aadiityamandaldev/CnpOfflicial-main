@@ -3,7 +3,7 @@
 
   var STAMP = String(Date.now());
   var FILE_MODE = location.protocol === "file:";
-  var FILES = ["app.js", "willow-live.js", "sony-liv.js", "fancode.js", "world-sports.js", "scroll-anim.js"];
+  var FILES = ["app.js", "live-events.js", "willow-live.js", "fancode.js", "world-sports.js", "sony-liv.js", "landing-news.js", "scroll-anim.js"];
   var STARTED = false;
 
   var FALLBACK = {
