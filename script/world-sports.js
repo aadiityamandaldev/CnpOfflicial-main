@@ -94,9 +94,6 @@
 
     matches.forEach(function (match, cardIndex) {
       const status     = statusInfo(match.status);
-      const isLive     = status.className === 'live';
-      const isUpcoming = status.className === 'upcoming';
-      const isEnded    = status.className === 'ended';
       const rawPageUrl = match.page_url || '';
       const pageUrl    = rawPageUrl
         ? ((CFG.playerBase ? String(CFG.playerBase).replace(/\/+$/, '') : '') +
@@ -112,7 +109,7 @@
       const safeUrl    = escapeHtml(pageUrl);
 
       let watchMarkup = '';
-      if (!isUpcoming && !isEnded && pageUrl) {
+      if (pageUrl) {
         watchMarkup = `<a class="md-watch-btn" href="${safeUrl}" aria-label="Watch ${imgAlt}">` +
           `<span class="md-watch-btn-icon" aria-hidden="true">&#9654;</span>WATCH NOW</a>`;
       }
@@ -166,9 +163,31 @@
   }
 
   function getJSON(url) {
-    return fetch(stamp(url), { cache: 'no-store' }).then(function (res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
+    return new Promise(function (resolve, reject) {
+      var controller = typeof window.AbortController === 'function' ? new window.AbortController() : null;
+      var options = { cache: 'no-store' };
+      var settled = false;
+      var timeout;
+
+      if (controller) options.signal = controller.signal;
+      function finish(error, payload) {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timeout);
+        if (error) reject(error); else resolve(payload);
+      }
+
+      timeout = window.setTimeout(function () {
+        if (controller) controller.abort();
+        finish(new Error('Request timed out'));
+      }, 12000);
+
+      fetch(stamp(url), options)
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (payload) { finish(null, payload); }, function (error) { finish(error); });
     });
   }
 
@@ -179,7 +198,8 @@
       return;
     }
 
-    renderSkeletons(6);
+    // Keep already-rendered cards visible during background refreshes.
+    if (!track.querySelector('.md-card')) renderSkeletons(6);
 
     getJSON(API_URL)
       .catch(function () {
@@ -207,7 +227,6 @@
   if (arrowLeft)  arrowLeft.addEventListener('click',  function (e) { e.stopPropagation(); track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' }); });
   if (arrowRight) arrowRight.addEventListener('click', function (e) { e.stopPropagation(); track.scrollBy({ left:  scrollAmount(), behavior: 'smooth' }); });
 
-  const section = document.getElementById('worldSportsSection');
   let loaded = false;
   let timer  = null;
 
@@ -220,14 +239,8 @@
     }, 60000);
   }
 
-  if ('IntersectionObserver' in window && section) {
-    const obs = new IntersectionObserver(function (entries) {
-      if (entries[0].isIntersecting) { load(); obs.disconnect(); }
-    }, { rootMargin: '200px' });
-    obs.observe(section);
-  } else {
-    load();
-  }
+  // Fetch immediately. Some mobile/desktop-mode browsers do not reliably fire the old observer.
+  load();
 
   window.addEventListener('beforeunload', function () { if (timer) window.clearInterval(timer); });
 })();
