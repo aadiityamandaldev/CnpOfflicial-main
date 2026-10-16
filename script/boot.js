@@ -3,7 +3,7 @@
 
   var STAMP = String(Date.now());
   var FILE_MODE = location.protocol === "file:";
-  var FILES = ["app.js", "live-events.js", "willow-live.js", "fancode.js", "world-sports.js", "sony-liv.js", "platform-status.js", "landing-news.js", "scroll-anim.js"];
+  var FILES = ["app.js", "live-events.js", "willow-live.js", "fancode.js", "world-sports.js", "sony-liv.js", "platform-status.js", "landing-news.js"];
   var STARTED = false;
 
   var FALLBACK = {
@@ -39,9 +39,22 @@
   function load(url) {
     return new Promise(function (resolve, reject) {
       var s = document.createElement("script");
+      var finished = false;
+      var timeout;
+
+      function finish(error) {
+        if (finished) return;
+        finished = true;
+        window.clearTimeout(timeout);
+        s.onload = null;
+        s.onerror = null;
+        if (error) reject(error); else resolve();
+      }
+
       s.src = url;
-      s.onload = resolve;
-      s.onerror = reject;
+      s.onload = function () { finish(); };
+      s.onerror = function () { finish(new Error("Script failed to load: " + url)); };
+      timeout = window.setTimeout(function () { finish(new Error("Script timed out: " + url)); }, 8000);
       document.head.appendChild(s);
     });
   }
