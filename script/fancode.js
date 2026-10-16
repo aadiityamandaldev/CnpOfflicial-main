@@ -228,8 +228,6 @@
       var m = matches[i];
 
       var status     = statusInfo(pick(m, ['status', 'matchStatus', 'state', 'status_display']));
-      var isLive     = status.className === 'live';
-      var isEnded    = status.className === 'ended';
 
       var id         = String(pick(m, ['match_id', 'id', 'matchId', 'matchID', 'stream_id']));
       var rawTitle   = buildTitle(m);
@@ -240,22 +238,19 @@
       var time       = escapeHtml(pick(m, ['startTime', 'time', 'date', 'matchTime', 'scheduled_time', 'start_time']));
 
       var watchHtml = '';
-      if (isLive && id) {
+      if (id) {
         var langs = getLanguages(m);
         var buttons = '';
         for (var j = 0; j < langs.length; j++) {
           var lang = langs[j];
           var href = escapeHtml(buildPlayerUrl(id, lang.code));
           var lbl  = escapeHtml(lang.label);
-          buttons += '<a class="md-watch-btn" href="' + href + '" aria-label="Watch in ' + lbl + '">' +
-            '<span class="md-watch-btn-icon" aria-hidden="true">&#9654;</span>WATCH NOW' +
-            '<span class="md-watch-btn-sep" aria-hidden="true"> &bull; </span>' + lbl + '</a>';
+          buttons += '<a class="md-watch-btn" href="' + href + '" aria-label="Watch ' + lbl + '">' +
+            '<span class="md-watch-btn-icon" aria-hidden="true">&#9654;</span><span>WATCH</span><span class="md-watch-language">' + lbl + '</span></a>';
         }
         if (buttons) watchHtml = '<div class="md-actions">' + buttons + '</div>';
       }
-      if (!isLive && !isEnded && !watchHtml) {
-        watchHtml = '<div class="md-actions"><span class="md-soon">Starts soon</span></div>';
-      }
+      if (!watchHtml) watchHtml = '<div class="md-actions"><span class="md-soon">Event details soon</span></div>';
 
       var matchupHtml = '';
       if (matchup) {
@@ -297,9 +292,31 @@
   }
 
   function getJSON(url) {
-    return fetch(stamp(url), { cache: 'no-store' }).then(function (res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
+    return new Promise(function (resolve, reject) {
+      var controller = typeof window.AbortController === 'function' ? new window.AbortController() : null;
+      var options = { cache: 'no-store' };
+      var settled = false;
+      var timeout;
+
+      if (controller) options.signal = controller.signal;
+      function finish(error, payload) {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timeout);
+        if (error) reject(error); else resolve(payload);
+      }
+
+      timeout = window.setTimeout(function () {
+        if (controller) controller.abort();
+        finish(new Error('Request timed out'));
+      }, 12000);
+
+      fetch(stamp(url), options)
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (payload) { finish(null, payload); }, function (error) { finish(error); });
     });
   }
 
@@ -310,7 +327,8 @@
       return;
     }
 
-    renderSkeletons(6);
+    // Keep already-rendered cards visible during background refreshes.
+    if (!track.querySelector('.md-card')) renderSkeletons(6);
 
     getJSON(API_URL)
       .catch(function () {
@@ -338,7 +356,6 @@
   if (arrowLeft)  arrowLeft.addEventListener('click',  function (e) { e.stopPropagation(); track.scrollBy({ left: -scrollAmt(), behavior: 'smooth' }); });
   if (arrowRight) arrowRight.addEventListener('click', function (e) { e.stopPropagation(); track.scrollBy({ left:  scrollAmt(), behavior: 'smooth' }); });
 
-  var section = document.getElementById('fancodeSection');
   var loaded = false;
   var timer = null;
 
@@ -351,14 +368,8 @@
     }, 60000);
   }
 
-  if ('IntersectionObserver' in window && section) {
-    var obs = new IntersectionObserver(function (entries) {
-      if (entries[0].isIntersecting) { load(); obs.disconnect(); }
-    }, { rootMargin: '200px' });
-    obs.observe(section);
-  } else {
-    load();
-  }
+  // Fetch immediately. Some mobile/desktop-mode browsers do not reliably fire the old observer.
+  load();
 
   window.addEventListener('beforeunload', function () { if (timer) window.clearInterval(timer); });
 })();
