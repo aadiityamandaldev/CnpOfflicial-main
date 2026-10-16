@@ -11,7 +11,6 @@
   var track = document.getElementById("sonyLivTrack");
   var arrowLeft = document.getElementById("sonyLivArrowLeft");
   var arrowRight = document.getElementById("sonyLivArrowRight");
-  var section = document.getElementById("sonyLivSection");
 
   if (!track) return;
 
@@ -101,7 +100,6 @@
       var id = match.match_id || match.id || match.event_id || "";
       var href = id === "" ? "" : playerUrl(id);
       var status = statusInfo(match.status);
-      var live = status.className === "live";
       var eventName = cleanTitle(match.event_name || match.title || "Sony Liv");
       var matchName = cleanTitle(match.match_name || "");
       var title = matchName || eventName || "Sony Liv";
@@ -115,7 +113,7 @@
       var safePoster = escapeHtml(poster);
       var watch = "";
 
-      if (live && href) {
+      if (href) {
         watch = "<span class=\"md-watch-btn\" aria-hidden=\"true\">" +
           "<span class=\"md-watch-btn-icon\">&#9654;</span>WATCH NOW</span>";
       }
@@ -144,17 +142,42 @@
     return url + (url.indexOf("?") > -1 ? "&" : "?") + "t=" + Date.now();
   }
 
+  function getJSON(url) {
+    return new Promise(function (resolve, reject) {
+      var controller = typeof window.AbortController === 'function' ? new window.AbortController() : null;
+      var options = { cache: "no-store" };
+      var settled = false;
+      var timeout;
+
+      if (controller) options.signal = controller.signal;
+      function finish(error, payload) {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timeout);
+        if (error) reject(error); else resolve(payload);
+      }
+
+      timeout = window.setTimeout(function () {
+        if (controller) controller.abort();
+        finish(new Error("Request timed out"));
+      }, 12000);
+
+      fetch(stamp(url), options)
+        .then(function (res) {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json();
+        })
+        .then(function (payload) { finish(null, payload); }, function (error) { finish(error); });
+    });
+  }
+
   function fetchEvents() {
     if (!API_URL) {
       track.innerHTML = "<div class=\"md-error\"><strong>Sony Liv feed is not configured</strong>Check script/config.js</div>";
       return;
     }
     if (!track.querySelector(".md-card")) renderSkeletons(4);
-    fetch(stamp(API_URL), { cache: "no-store" })
-      .then(function (res) {
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        return res.json();
-      })
+    getJSON(API_URL)
       .then(function (data) {
         var matches = extractMatches(data).slice();
         matches.sort(function (a, b) { return rank(a) - rank(b); });
@@ -196,17 +219,8 @@
     }, 60000);
   }
 
-  if ("IntersectionObserver" in window && section) {
-    var obs = new IntersectionObserver(function (entries) {
-      if (entries[0].isIntersecting) {
-        load();
-        obs.disconnect();
-      }
-    }, { rootMargin: "240px" });
-    obs.observe(section);
-  } else {
-    load();
-  }
+  // Fetch immediately. Some mobile/desktop-mode browsers do not reliably fire the old observer.
+  load();
 
   window.addEventListener("beforeunload", function () {
     if (timer) window.clearInterval(timer);
