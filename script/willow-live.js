@@ -238,10 +238,7 @@
         matchupHtml = '<div class="md-event-title">' + escapeHtml(rawTitle) + '</div>';
       }
 
-      var cardTag = (!isUpcoming || upcomingClickable) && id ? 'a' : 'article';
-      var hrefAttr = (cardTag === 'a') ? ' href="' + escapeHtml(buildPlayerUrl(id, streamUrl)) + '"' : '';
-
-      html += '<' + cardTag + ' class="md-card md-' + status.className + '"' + hrefAttr + ' data-match-id="' + escapeHtml(id) + '">' +
+      html += '<article class="md-card md-' + status.className + '" data-match-id="' + escapeHtml(id) + '">' +
         '<div class="md-thumb">' +
           '<img src="' + imgSrc + '" alt="' + imgAlt + '" ' +
                (i < EAGER_CARDS ? 'loading="eager"' : 'loading="lazy"') + ' decoding="async" ' +
@@ -256,7 +253,7 @@
             watchHtml +
           '</div>' +
         '</div>' +
-        '</' + cardTag + '>';
+        '</article>';
     }
 
     html += mdViewAllCard(viewAllLink, viewAllLabel);
