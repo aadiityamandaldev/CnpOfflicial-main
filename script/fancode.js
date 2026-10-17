@@ -5,7 +5,7 @@
   var apis         = cfg.apis || {};
   var API_URL      = apis.fanCode || apis.fancode || '';
   var ROUTES       = cfg.routes || {};
-  var PLAYER_ROUTE = ROUTES.fancodePlayer || '/fc/play/';
+  var PLAYER_ROUTE = ROUTES.fancodePlayer || '/watch/fancode/pz/';
   var PLAYER_BASE  = cfg.playerBase || '';
   var EAGER_CARDS  = 5;
 
@@ -138,7 +138,8 @@
   }
 
   function buildPlayerUrl(matchId, languageCode) {
-    var secCfg = (cfg.sections || {}).fancode || {};
+    var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var secCfg = (cfgObj.sections || {}).fancode || {};
     var secLink = String(secCfg.link || '');
     var base;
     if (secLink) {
@@ -149,10 +150,9 @@
       base = routeBase + route;
     }
     var bid = baseId(matchId);
-    var params = [];
-    params.push('id=' + encodeURIComponent(languageCode ? bid + '_' + languageCode : bid));
-    params.push('s=0');
-    return base + '?' + params.join('&');
+    if (!bid) return String(secCfg.viewAllLink || '/watch/fancode/');
+    var lc = String(languageCode || 'en').toLowerCase();
+    return base + '?' + bid + '_' + lc;
   }
 
   function buildTitle(m) {
@@ -245,13 +245,12 @@
   function renderMatches(matches) {
     var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
     var cardLimit = Number(cfgObj.cardLimit) || 10;
-    var upcomingClickable = cfgObj.upcomingClickable !== false;
     var labels = cfgObj.labels || {};
     var watchLabel = labels.watchNow || 'Watch Now';
     var comingSoonLabel = labels.comingSoon || 'Coming Soon';
     var viewAllLabel = labels.viewAll || 'View All Events';
     var secCfg = (cfgObj.sections || {}).fancode || {};
-    var viewAllLink = secCfg.viewAllLink || '/events/?sport=fancode';
+    var viewAllLink = secCfg.viewAllLink || '/watch/fancode/';
 
     updateSectionStatus(matches);
 
