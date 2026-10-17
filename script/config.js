@@ -106,3 +106,7 @@ if (typeof CNPTV_CONF !== "undefined" && CNPTV_CONF) {
     }
   ];
 }
+
+if(typeof CNPTV_CONF!=='undefined'&&CNPTV_CONF){
+  CNPTV_CONF.heroMatches = [];
+}
