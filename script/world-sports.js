@@ -46,27 +46,6 @@
     return { home: home, away: away };
   }
 
-  function buildMatchUrl(match) {
-    var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
-    var secCfg = (cfgObj.sections || {}).worldSports || {};
-    var rawPageUrl = match.page_url || '';
-
-    if (rawPageUrl) {
-      var base = cfgObj.playerBase ? String(cfgObj.playerBase).replace(/\/+$/, '') : '';
-      return base + (rawPageUrl.charAt(0) === '/' ? rawPageUrl : '/' + rawPageUrl);
-    }
-
-    var secLink = String(secCfg.link || '');
-    if (secLink) {
-      var helper = window.CnpTVHelper;
-      var matchId = String(match.id || match.matchId || match.match_id || match.stream_id || '');
-      if (helper && matchId) return helper.buildUrl(secCfg, matchId);
-      return secLink;
-    }
-
-    return '';
-  }
-
   function updateSectionStatus(allMatches) {
     var el = document.getElementById('worldSportsStatus');
     if (!el) return;
@@ -107,13 +86,13 @@
   function renderMatches(matches) {
     var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
     var cardLimit = Number(cfgObj.cardLimit) || 10;
-    var upcomingClickable = cfgObj.upcomingClickable !== false;
     var labels = cfgObj.labels || {};
     var watchLabel = labels.watchNow || 'Watch Now';
     var comingSoonLabel = labels.comingSoon || 'Coming Soon';
     var viewAllLabel = labels.viewAll || 'View All Events';
     var secCfg = (cfgObj.sections || {}).worldSports || {};
-    var viewAllLink = secCfg.viewAllLink || '/events/?sport=world-sports';
+    var viewAllLink = secCfg.viewAllLink || '/watch/wwsports/';
+    var basePath = String(secCfg.link || '/watch/wwsports/');
 
     updateSectionStatus(matches);
 
@@ -138,24 +117,24 @@
     for (var cardIndex = 0; cardIndex < visible.length; cardIndex++) {
       var match    = visible[cardIndex];
       var status   = statusInfo(match.status);
-      var pageUrl  = buildMatchUrl(match);
+      var isLive   = status.className === 'live';
+      var rawId    = String(match.id || match.matchId || match.match_id || match.stream_id || '').trim();
+      var safeMatchId = rawId ? encodeURIComponent(rawId) : '';
+      var pageUrl  = (isLive && safeMatchId) ? basePath + '?id=' + safeMatchId : basePath;
+      var safeUrl  = escapeHtml(pageUrl);
       var rawTitle = match.title || match.teams || 'Event';
       var matchup  = parseMatchup(rawTitle);
       var league   = escapeHtml(match.league || match.sport || 'World Sports');
       var imgSrc   = escapeHtml(match.thumbnail || fallbackImg);
       var imgAlt   = escapeHtml(rawTitle);
       var time     = escapeHtml(match.date || match.time || '');
-      var safeUrl  = escapeHtml(pageUrl);
-
-      var isUpcoming = status.className === 'upcoming';
-      var canClick = pageUrl && (!isUpcoming || upcomingClickable);
 
       var watchMarkup = '';
-      if (isUpcoming) {
-        watchMarkup = '<span class="md-watch-btn md-coming-soon">' + escapeHtml(comingSoonLabel) + '</span>';
-      } else if (pageUrl) {
+      if (isLive && safeMatchId) {
         watchMarkup = '<a class="md-watch-btn" href="' + safeUrl + '" aria-label="Watch ' + imgAlt + '">' +
           '<span class="md-watch-btn-icon" aria-hidden="true">&#9654;</span>' + escapeHtml(watchLabel) + '</a>';
+      } else {
+        watchMarkup = '<a class="md-watch-btn md-coming-soon" href="' + escapeHtml(basePath) + '">' + escapeHtml(comingSoonLabel) + '</a>';
       }
 
       var matchupHtml = '';
@@ -180,7 +159,7 @@
           matchupHtml +
           '<div class="md-footer">' +
             (time ? '<time class="md-time">' + time + '</time>' : '<span class="md-time"></span>') +
-            (watchMarkup ? '<div class="md-actions">' + watchMarkup + '</div>' : '') +
+            '<div class="md-actions">' + watchMarkup + '</div>' +
           '</div>' +
         '</div>' +
         '</article>';
@@ -195,7 +174,7 @@
     if (!card) return;
     if (e.target.closest('a, button')) return;
     var href = card.dataset.href;
-    if (href && href !== '#') window.location.href = href;
+    if (href) window.location.assign(href);
   });
 
   var STAMP = String(Date.now());
