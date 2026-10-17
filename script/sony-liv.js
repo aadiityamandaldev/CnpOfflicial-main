@@ -5,7 +5,7 @@
   var apis = cfg.apis || {};
   var routes = cfg.routes || {};
   var API_URL = apis.sonyLiv || apis.sony || apis.sonyliv || "";
-  var PLAYER_ROUTE = routes.sonyPlayer || "/player/sony";
+  var PLAYER_ROUTE = routes.sonyPlayer || "/watch/sliv/";
   var PLAYER_BASE = cfg.playerBase || "";
 
   var track = document.getElementById("sonyLivTrack");
@@ -53,7 +53,7 @@
       return helper && id ? helper.buildUrl(secCfg, String(id)) : secLink;
     }
 
-    var route = String(PLAYER_ROUTE || "/player/sony");
+    var route = String(PLAYER_ROUTE || "/watch/sliv/");
     if (route.charAt(0) !== "/" && route.indexOf("://") === -1) route = "/" + route;
     var base = String(PLAYER_BASE || "").replace(/\/+$/, "");
     var join = route.indexOf("?") === -1 ? "?id=" : "&id=";
@@ -123,7 +123,7 @@
     var comingSoonLabel = labels.comingSoon || "Coming Soon";
     var viewAllLabel = labels.viewAll || "View All Events";
     var secCfg = (cfgObj.sections || {}).sonyLiv || {};
-    var viewAllLink = secCfg.viewAllLink || "/events/?sport=sony-liv";
+    var viewAllLink = secCfg.viewAllLink || "/watch/sliv/";
 
     updateSectionStatus(matches);
 
