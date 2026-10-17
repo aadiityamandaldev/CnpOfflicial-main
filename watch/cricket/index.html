@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="bn">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -706,6 +706,11 @@ main{
     }
 
     if (!keys && typeof item.keys === 'string') keys = item.keys.trim();
+
+    if (!keys && typeof item.key === 'string' && item.key.indexOf(':') !== -1) {
+      keys = item.key.trim();
+    }
+
     if (!keys && item.keyId && (item.key || item.kid)) {
       keys = String(item.keyId) + ':' + String(item.key || item.kid);
     }
