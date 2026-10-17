@@ -66,6 +66,20 @@
     guj: 'GUJARATI', gu: 'GUJARATI', gujarati: 'GUJARATI'
   };
 
+  var LANG_SHORT = {
+    english: 'en',  hindi: 'hi',  tamil: 'ta',  telugu: 'te',
+    kannada: 'kn',  malayalam: 'ml', bengali: 'bn', marathi: 'mr',
+    gujarati: 'gu', punjabi: 'pa',   odia: 'or',    urdu: 'ur',
+    assamese: 'as', bhojpuri: 'bh',
+    eng: 'en', hin: 'hi', tam: 'ta', tel: 'te', kan: 'kn',
+    mal: 'ml', ben: 'bn', mar: 'mr', guj: 'gu'
+  };
+
+  function urlLangCode(value) {
+    var k = langCode(value);
+    return LANG_SHORT[k] || k;
+  }
+
   var NOT_A_LANGUAGE = ['primary', 'backup', 'default', 'main', 'auto', 'hls', 'dash', 'mpd',
     'cdn', 'link', 'links', 'stream', 'streams', 'url', 'server', 'servers'];
 
@@ -91,7 +105,7 @@
     var out = [];
     var seen = {};
     function add(value) {
-      var code = langCode(value);
+      var code = urlLangCode(value);
       if (!code || seen[code]) return;
       seen[code] = true;
       out.push({ code: code, label: langLabel(value) });
