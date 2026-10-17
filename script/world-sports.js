@@ -169,10 +169,7 @@
         matchupHtml = '<div class="md-event-title">' + escapeHtml(rawTitle) + '</div>';
       }
 
-      var cardTag = canClick ? 'a' : 'article';
-      var hrefAttr = canClick ? ' href="' + safeUrl + '"' : ' data-href="' + safeUrl + '"';
-
-      html += '<' + cardTag + ' class="md-card md-' + status.className + '"' + hrefAttr + '>' +
+      html += '<article class="md-card md-' + status.className + '" data-href="' + safeUrl + '">' +
         '<div class="md-thumb">' +
           '<img src="' + imgSrc + '" alt="' + imgAlt + '" ' + (cardIndex < 5 ? 'loading="eager"' : 'loading="lazy"') + ' decoding="async"' +
                ' onerror="this.onerror=null;this.src=\'' + fallbackImg + '\'">' +
@@ -186,7 +183,7 @@
             (watchMarkup ? '<div class="md-actions">' + watchMarkup + '</div>' : '') +
           '</div>' +
         '</div>' +
-        '</' + cardTag + '>';
+        '</article>';
     }
 
     html += mdViewAllCard(viewAllLink, viewAllLabel);
