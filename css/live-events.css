@@ -169,21 +169,7 @@
   border-color: rgba(169, 241, 223, 0.55);
 }
 
-#sports .md-thumb {
-  position: relative;
-  background: #0d1820;
-  overflow: hidden;
-}
-
-#sports .md-thumb img {
-  width: 100%;
-  display: block;
-  transition: transform 0.32s ease;
-}
-
-#sports .md-card:hover .md-thumb img {
-  transform: scale(1.035);
-}
+#sports .md-thumb { background: #0d1820; }
 
 #sports .md-info {
   padding: 13px 14px 14px;
@@ -192,10 +178,9 @@
 
 #sports .md-tournament { color: var(--home-yellow); font-size: 0.66rem; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 5px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #sports .md-vs { border-color: rgba(247, 205, 56, 0.36); color: #f8d762; background: rgba(247, 205, 56, 0.09); }
-#sports .md-status { position: absolute; top: 10px; left: 10px; padding: 4px 9px; border-radius: 6px; font-size: 0.56rem; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
-#sports .md-status.md-live { color: #fff; background: rgba(185, 23, 60, 0.94); box-shadow: 0 0 14px rgba(238, 49, 86, 0.4); }
-#sports .md-status.md-live::before { content: ''; display: inline-block; width: 5px; height: 5px; margin-right: 5px; border-radius: 50%; background: #fff; vertical-align: middle; }
-#sports .md-status.md-upcoming { color: #f8d654; background: rgba(84, 67, 6, 0.82); border: 1px solid rgba(247, 205, 56, 0.32); }
+#sports .md-status.md-live { border-color: rgba(238, 49, 86, 0.5); color: #fff; background: rgba(185, 23, 60, 0.94); box-shadow: 0 0 14px rgba(238, 49, 86, 0.4); }
+#sports .md-status.md-live::before { background: #fff; animation: none; }
+#sports .md-status.md-upcoming { border-color: rgba(247, 205, 56, 0.44); color: #f8d654; background: rgba(84, 67, 6, 0.82); }
 #sports .md-status.md-ended { color: #a6b6c2; background: rgba(40, 55, 68, 0.88); }
 
 #sports .md-watch-btn {
