@@ -35,6 +35,8 @@ var CNPTV_CONF = {
   cardLimit: 10,
   upcomingClickable: false,
 
+  siteBase: "",
+
   labels: {
     watchNow:   "Watch Now",
     comingSoon: "Coming Soon",
@@ -59,16 +61,19 @@ window.MATCHDEKHO_CONFIG = CNPTV_CONF;
 
 window.CnpTVHelper = (function () {
   function buildUrl(sectionCfg, eventId) {
+    var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var siteBase = String(cfg.siteBase || "").replace(/\/+$/, "");
     var base = String(sectionCfg && sectionCfg.link || "");
     if (!base) return "";
-    if (!eventId) return base;
+    var resolved = (base.indexOf("://") === -1 && siteBase) ? (siteBase + base) : base;
+    if (!eventId) return resolved;
     var mode = String(sectionCfg.idMode || "param");
     var key  = String(sectionCfg.idKey  || "id");
     if (mode === "path") {
-      return base.replace(/\/$/, "") + "/" + encodeURIComponent(eventId);
+      return resolved.replace(/\/$/, "") + "/" + encodeURIComponent(eventId);
     }
-    var sep = base.indexOf("?") > -1 ? "&" : "?";
-    return base + sep + encodeURIComponent(key) + "=" + encodeURIComponent(eventId);
+    var sep = resolved.indexOf("?") > -1 ? "&" : "?";
+    return resolved + sep + encodeURIComponent(key) + "=" + encodeURIComponent(eventId);
   }
 
   function extractId(item) {
