@@ -24,16 +24,16 @@ var CNPTV_CONF = {
   },
 
   sections: {
-    football:    { link: "/watch/?src=football", idMode: "param", idKey: "id", viewAllLink: "/events/?sport=football" },
-    cricket:     { link: "/watch/?src=cricket",  idMode: "param", idKey: "id", viewAllLink: "/events/?sport=cricket"  },
-    willow:      { link: "/az/",                 idMode: "param", idKey: "id", viewAllLink: "/events/?sport=willow"   },
-    fancode:     { link: "/fc/play/",            idMode: "param", idKey: "id", viewAllLink: "/events/?sport=fancode"  },
-    worldSports: { link: "",                     idMode: "param", idKey: "id", viewAllLink: "/events/?sport=world-sports" },
-    sonyLiv:     { link: "/player/sony",         idMode: "param", idKey: "id", viewAllLink: "/events/?sport=sony-liv" }
+    football:    { link: "/watch/football/",   idMode: "param", idKey: "id", viewAllLink: "/watch/football/"  },
+    cricket:     { link: "/watch/cricket/",    idMode: "param", idKey: "id", viewAllLink: "/watch/cricket/"   },
+    willow:      { link: "/watch/willow/",     idMode: "param", idKey: "id", viewAllLink: "/watch/willow/"    },
+    fancode:     { link: "/watch/fancode/pz/", idMode: "param", idKey: "id", viewAllLink: "/watch/fancode/"   },
+    worldSports: { link: "/watch/wwsports/",   idMode: "param", idKey: "id", viewAllLink: "/watch/wwsports/"  },
+    sonyLiv:     { link: "/watch/sliv/",       idMode: "param", idKey: "id", viewAllLink: "/watch/sliv/"      }
   },
 
   cardLimit: 10,
-  upcomingClickable: false,
+  upcomingClickable: true,
 
   siteBase: "",
 
@@ -46,9 +46,9 @@ var CNPTV_CONF = {
   playerBase: "",
 
   routes: {
-    willowPlayer:  "/az/",
-    fancodePlayer: "/fc/play/",
-    sonyPlayer:    "/player/sony"
+    willowPlayer:  "/watch/willow/",
+    fancodePlayer: "/watch/fancode/pz/",
+    sonyPlayer:    "/watch/sliv/"
   },
 
   willowPlayerMode: "stream",
@@ -89,25 +89,6 @@ window.CnpTVHelper = (function () {
 })();
 
 if (typeof CNPTV_CONF !== "undefined" && CNPTV_CONF) {
-  CNPTV_CONF.heroMatches = [
-    {
-      "tournament": "WEST INDIES TOUR OF INDIA - 3RD T20I",
-      "homeTeam": {
-        "name": "India",
-        "logo": "https://flagpedia.net/data/flags/w1160/in.webp"
-      },
-      "awayTeam": {
-        "name": "West Indies",
-        "logo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Cricket_West_Indies_flag_2017.svg/1920px-Cricket_West_Indies_flag_2017.svg.png"
-      },
-      "poster": "https://img10.hotstar.com/image/upload/f_auto,q_90,w_1920/sources/r1/cms/prod/9280/1791259109280-i",
-      "date": "14 OCT 2026, 07:00 PM",
-      "watchUrl": "/home/live/ind-vs-wi.html"
-    }
-  ];
-}
-
-if(typeof CNPTV_CONF!=='undefined'&&CNPTV_CONF){
   CNPTV_CONF.heroMatches = [
     {
       "tournament": "WEST INDIES TOUR OF INDIA - 3RD T20I",
