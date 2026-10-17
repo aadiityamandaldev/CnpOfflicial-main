@@ -5,22 +5,25 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#050505">
 <meta name="referrer" content="no-referrer">
-<title>Live Event</title>
+<title>Live Events</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/controls.css">
+
 <style>
+
 :root{
   color-scheme:dark;
   --bg:#050505;
-  --card:#101014;
   --line:rgba(255,255,255,.09);
-  --muted:#9b9ba4;
   --orange:#f97316;
   --green:#25d366;
 }
+
 *{box-sizing:border-box}
+
 html,body{
   margin:0;
   min-height:100%;
@@ -30,8 +33,16 @@ html,body{
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
 }
-body{min-height:100vh;display:flex;flex-direction:column}
+
+body{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
 button{font:inherit}
+
+[hidden]{display:none!important}
 
 .site-header{
   position:sticky;
@@ -47,6 +58,7 @@ button{font:inherit}
   backdrop-filter:blur(18px);
   border-bottom:1px solid var(--line);
 }
+
 .site-header:after{
   content:"";
   position:absolute;
@@ -56,6 +68,7 @@ button{font:inherit}
   height:1px;
   background:linear-gradient(90deg,transparent,rgba(249,115,22,.5),transparent);
 }
+
 .back-link{
   display:flex;
   align-items:center;
@@ -68,6 +81,7 @@ button{font:inherit}
 }
 .back-link:hover{color:#fff}
 .back-link svg{width:19px;height:19px}
+
 .header-center{
   display:flex;
   align-items:center;
@@ -75,6 +89,7 @@ button{font:inherit}
   min-width:0;
   text-align:center;
 }
+
 .matchup{
   display:flex;
   align-items:center;
@@ -100,6 +115,7 @@ button{font:inherit}
   color:var(--orange);
 }
 .matchup:empty{display:none}
+
 .spacer{justify-self:end;width:44px}
 
 main{
@@ -108,6 +124,216 @@ main{
   margin:0 auto;
   padding:clamp(10px,2vw,22px) clamp(10px,2vw,22px) 28px;
   flex:1;
+}
+
+.landing{padding:14px 0 0}
+
+.landing-head{
+  text-align:center;
+  margin:10px 0 24px;
+}
+.landing-title{
+  margin:0 0 8px;
+  font-size:clamp(1.35rem,3.4vw,1.95rem);
+  font-weight:900;
+  letter-spacing:-.025em;
+  line-height:1.15;
+}
+.landing-title span{color:var(--orange)}
+.landing-sub{
+  margin:0;
+  font-size:.8rem;
+  color:#8a8a94;
+  font-weight:500;
+}
+
+.landing-notice{
+  max-width:620px;
+  margin:0 auto 18px;
+  padding:10px 14px;
+  background:rgba(249,115,22,.08);
+  border:1px solid rgba(249,115,22,.25);
+  border-radius:10px;
+  color:#ffa264;
+  font-size:.78rem;
+  font-weight:600;
+  text-align:center;
+}
+
+.match-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:14px;
+}
+
+.match-card{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:16px;
+  background:linear-gradient(145deg,rgba(18,18,22,.96),rgba(10,10,12,.92));
+  border:1px solid var(--line);
+  border-radius:16px;
+  cursor:pointer;
+  text-align:left;
+  color:inherit;
+  font:inherit;
+  transition:transform .18s,border-color .18s,background .18s,box-shadow .18s;
+  overflow:hidden;
+  appearance:none;
+}
+.match-card:hover{
+  transform:translateY(-3px);
+  border-color:rgba(249,115,22,.5);
+  background:linear-gradient(145deg,rgba(23,22,20,.98),rgba(12,11,10,.94));
+  box-shadow:0 12px 32px rgba(0,0,0,.5);
+}
+
+.match-card[data-status="live"]{border-color:rgba(255,91,91,.28)}
+.match-card[data-status="live"]::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg,transparent,#ff5b5b,transparent);
+  opacity:.75;
+}
+
+.card-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.card-status{
+  font-size:.6rem;
+  font-weight:900;
+  letter-spacing:.12em;
+  padding:3px 8px;
+  border-radius:6px;
+  text-transform:uppercase;
+  line-height:1;
+  flex:none;
+}
+.card-status.live{
+  color:#ff5b5b;
+  background:rgba(255,91,91,.1);
+  border:1px solid rgba(255,91,91,.32);
+  animation:pulseStatus 1.8s ease-in-out infinite;
+}
+.card-status.upcoming{
+  color:#7dd3fc;
+  background:rgba(125,211,252,.1);
+  border:1px solid rgba(125,211,252,.3);
+}
+.card-status.ended{
+  color:#8b8b93;
+  background:rgba(139,139,147,.1);
+  border:1px solid rgba(139,139,147,.25);
+}
+@keyframes pulseStatus{
+  0%,100%{opacity:1}
+  50%{opacity:.55}
+}
+
+.card-time{
+  font-size:.68rem;
+  font-weight:600;
+  color:#8b8b94;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-align:right;
+  min-width:0;
+}
+
+.card-teams{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:10px;
+}
+.card-team{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+.card-team.right{justify-content:flex-end;text-align:right}
+
+.card-logo-wrap{
+  position:relative;
+  width:38px;
+  height:38px;
+  flex:none;
+}
+.card-logo{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  object-fit:cover;
+  background:#19191d;
+  border:1px solid #ffffff1a;
+  padding:2px;
+  z-index:2;
+}
+
+.card-logo-fallback{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:linear-gradient(135deg,#2a2a30,#18181c);
+  border:1px solid #ffffff14;
+  color:var(--orange);
+  font-size:.72rem;
+  font-weight:900;
+  z-index:1;
+}
+
+.card-name{
+  font-size:.86rem;
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  letter-spacing:-.01em;
+}
+.card-vs{
+  font-size:.58rem;
+  font-weight:900;
+  letter-spacing:.14em;
+  color:var(--orange);
+  flex:none;
+}
+.card-title{
+  font-size:.72rem;
+  font-weight:600;
+  color:#8e8e97;
+  line-height:1.35;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.landing-empty{
+  max-width:520px;
+  margin:40px auto;
+  padding:32px 24px;
+  text-align:center;
+  color:#8a8a94;
+  font-size:.9rem;
+  font-weight:500;
+  background:linear-gradient(145deg,rgba(18,18,22,.96),rgba(10,10,12,.92));
+  border:1px solid var(--line);
+  border-radius:16px;
 }
 
 .player-shell{
@@ -129,6 +355,7 @@ main{
   object-fit:contain;
   background:#000;
 }
+
 .shaka-spinner-container{display:none!important}
 .shaka-controls-container button{color:#fff!important}
 
@@ -238,6 +465,7 @@ main{
   background:var(--line);
 }
 .section-title span{white-space:nowrap}
+
 .channel-grid{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
@@ -260,6 +488,7 @@ main{
 }
 .channel:hover{transform:translateY(-2px);border-color:#f973166e;background:#171411}
 .channel.active{border-color:var(--orange);box-shadow:0 0 0 1px #f9731624}
+
 .channel-logo{
   width:37px;
   height:37px;
@@ -291,6 +520,7 @@ main{
   white-space:nowrap;
 }
 .channel.active .channel-state{color:#ffa264}
+
 .source-note{
   min-height:18px;
   text-align:center;
@@ -342,6 +572,7 @@ main{
 }
 .footer-nav a:hover{color:#fff}
 .footer-nav svg{width:15px;height:15px;color:var(--orange)}
+
 .footer-bottom{border-top:1px solid rgba(255,255,255,.055)}
 .footer-bottom-inner{
   max-width:1280px;
@@ -373,6 +604,7 @@ main{
   animation:fadePopup .35s ease;
 }
 #waOverlay.show{display:flex}
+
 #waCard{
   width:100%;
   max-width:410px;
@@ -408,6 +640,7 @@ main{
   box-shadow:0 0 34px rgba(37,211,102,.2);
 }
 .wa-icon svg{width:34px;height:34px;fill:#fff}
+
 #waCard h2{
   position:relative;
   margin:0 0 8px;
@@ -436,11 +669,15 @@ main{
 .wa-btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
 #btnAlready{background:rgba(255,255,255,.06);color:#d0d0d4;border:1px solid rgba(255,255,255,.1)}
 #btnJoin{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;box-shadow:0 6px 24px rgba(37,211,102,.2)}
+
 @keyframes fadePopup{
   from{opacity:0;transform:scale(.97) translateY(10px)}
   to{opacity:1;transform:scale(1) translateY(0)}
 }
 
+@media(max-width:720px){
+  .match-grid{grid-template-columns:1fr}
+}
 @media(max-width:650px){
   .site-header{min-height:50px}
   .matchup{font-size:.72rem;gap:6px}
@@ -452,6 +689,7 @@ main{
   .footer-bottom-inner{align-items:flex-start;flex-direction:column}
   .back-link span{display:none}
 }
+
 @media(prefers-reduced-motion:reduce){
   *,*:before,*:after{
     animation-duration:.01ms!important;
@@ -465,9 +703,9 @@ main{
 <body>
 
 <header class="site-header">
-  <a class="back-link" href="./" aria-label="Home">
+  <a class="back-link" href="./" id="backLink" aria-label="Home">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>
-    <span>Home</span>
+    <span id="backLabel">Home</span>
   </a>
   <div class="header-center">
     <div class="matchup" id="headerMatchup"></div>
@@ -476,38 +714,57 @@ main{
 </header>
 
 <main>
-  <section class="player-shell" id="playerShell" aria-label="Video player">
-    <video id="video" playsinline webkit-playsinline autoplay muted preload="auto" aria-label="Event video"></video>
-    <div id="loader" aria-hidden="true">
-      <svg viewBox="0 0 44 44">
-        <circle class="track" cx="22" cy="22" r="18"></circle>
-        <circle class="arc" cx="22" cy="22" r="18"></circle>
-      </svg>
+
+  <section class="landing" id="viewLanding" hidden>
+    <div class="landing-head">
+      <h1 class="landing-title">Live <span>&amp;</span> Upcoming</h1>
+      <p class="landing-sub">Pick a match to start watching</p>
     </div>
+
+    <div class="landing-notice" id="landingNotice" hidden></div>
+
+    <div class="match-grid" id="matchGrid"></div>
+
+    <p class="landing-empty" id="landingEmpty" hidden>No events available right now.</p>
   </section>
 
-  <section class="match-panel" aria-label="Match information">
-    <h1 class="match-title" id="matchTitle"></h1>
-    <div class="teams">
-      <div class="team">
-        <img class="team-logo" id="logoA" alt="" referrerpolicy="no-referrer">
-        <strong class="team-name" id="teamA"></strong>
+  <section id="viewPlayer" hidden>
+
+    <section class="player-shell" id="playerShell" aria-label="Video player">
+      <video id="video" playsinline webkit-playsinline autoplay muted preload="auto" aria-label="Event video"></video>
+      <div id="loader" aria-hidden="true">
+        <svg viewBox="0 0 44 44">
+          <circle class="track" cx="22" cy="22" r="18"></circle>
+          <circle class="arc" cx="22" cy="22" r="18"></circle>
+        </svg>
       </div>
-      <span class="vs">VS</span>
-      <div class="team">
-        <strong class="team-name" id="teamB"></strong>
-        <img class="team-logo" id="logoB" alt="" referrerpolicy="no-referrer">
+    </section>
+
+    <section class="match-panel" aria-label="Match information">
+      <h1 class="match-title" id="matchTitle"></h1>
+      <div class="teams">
+        <div class="team">
+          <img class="team-logo" id="logoA" alt="" referrerpolicy="no-referrer">
+          <strong class="team-name" id="teamA"></strong>
+        </div>
+        <span class="vs">VS</span>
+        <div class="team">
+          <strong class="team-name" id="teamB"></strong>
+          <img class="team-logo" id="logoB" alt="" referrerpolicy="no-referrer">
+        </div>
       </div>
-    </div>
-    <div class="match-time"><b>Start time:</b> <span id="startTime">—</span></div>
-    <div class="elapsed" id="elapsedText"></div>
+      <div class="match-time"><b>Start time:</b> <span id="startTime">—</span></div>
+      <div class="elapsed" id="elapsedText"></div>
+    </section>
+
+    <section class="channels" aria-label="Stream sources">
+      <h2 class="section-title"><span>Stream Channels <small id="channelCount"></small></span></h2>
+      <div class="channel-grid" id="channelGrid"></div>
+      <p class="source-note" id="sourceNote" aria-live="polite"></p>
+    </section>
+
   </section>
 
-  <section class="channels" aria-label="Stream sources">
-    <h2 class="section-title"><span>Stream Channels <small id="channelCount"></small></span></h2>
-    <div class="channel-grid" id="channelGrid"></div>
-    <p class="source-note" id="sourceNote" aria-live="polite"></p>
-  </section>
 </main>
 
 <footer class="site-footer">
@@ -547,6 +804,7 @@ main{
 
 <script src="https://cdn.jsdelivr.net/npm/mux.js@7/dist/mux.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/shaka-player.ui.min.js"></script>
+
 <script>
 (function () {
   'use strict';
@@ -554,17 +812,29 @@ main{
   var API_URL = 'https://sonujson-v5.pages.dev/Data/events/cricket.json';
   var WHATSAPP_URL = 'https://whatsapp.com/channel/0029VbBjdsD9Bb63qmSGBY2f';
 
+  var LIVE_WINDOW_MS = 12 * 60 * 60 * 1000;
+
   var query = new URLSearchParams(window.location.search);
   var requestedId = (query.get('id') || '').trim();
   var directUrl = query.get('url');
   var directKeys = query.get('keys');
+  var directKeyId = query.get('keyId') || query.get('keyid') || query.get('kid') || '';
+  var directKey = query.get('key') || '';
 
-  var video = document.getElementById('video');
-  var shell = document.getElementById('playerShell');
-  var loader = document.getElementById('loader');
-  var channelGrid = document.getElementById('channelGrid');
-  var sourceNote = document.getElementById('sourceNote');
-  var headerMatchup = document.getElementById('headerMatchup');
+  var video        = document.getElementById('video');
+  var shell        = document.getElementById('playerShell');
+  var loader       = document.getElementById('loader');
+  var channelGrid  = document.getElementById('channelGrid');
+  var sourceNote   = document.getElementById('sourceNote');
+  var headerMatchup= document.getElementById('headerMatchup');
+  var backLink     = document.getElementById('backLink');
+  var backLabel    = document.getElementById('backLabel');
+
+  var viewLanding  = document.getElementById('viewLanding');
+  var viewPlayer   = document.getElementById('viewPlayer');
+  var landingNotice= document.getElementById('landingNotice');
+  var matchGrid    = document.getElementById('matchGrid');
+  var landingEmpty = document.getElementById('landingEmpty');
 
   var player = null;
   var overlay = null;
@@ -572,7 +842,7 @@ main{
   var loadToken = 0;
   var clockTimer = null;
   var activeHeaders = null;
-  var activeOrigin = '';
+  var activeOrigin = ''
 
   function byId(id) { return document.getElementById(id); }
 
@@ -587,9 +857,7 @@ main{
 
   function normalizeHex(value) {
     var hex = String(value == null ? '' : value).replace(/[^0-9a-fA-F]/g, '').toLowerCase();
-    if (!hex) return '';
-    if (hex.length < 32) hex = hex.padStart(32, '0');
-    return hex;
+    return hex.length === 32 ? hex : '';
   }
 
   function parseIST(value) {
@@ -609,11 +877,26 @@ main{
     return h + ':' + m + ':' + s;
   }
 
+  function fmtMatchTime(value) {
+    var d = parseIST(value);
+    if (!d) return value || 'TBD';
+    try {
+      return d.toLocaleString('en-IN', {
+        day: 'numeric', month: 'short',
+        hour: 'numeric', minute: '2-digit',
+        hour12: true, timeZone: 'Asia/Kolkata'
+      });
+    } catch (e) {
+      return value;
+    }
+  }
+
   function startClock(startValue) {
     if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
     var el = byId('elapsedText');
     var start = parseIST(startValue);
     if (!el || !start) { setText('elapsedText', ''); return; }
+
     function tick() {
       var diff = Math.floor((Date.now() - start.getTime()) / 1000);
       if (diff < 0) el.textContent = 'Starts in ' + fmtDuration(-diff);
@@ -628,17 +911,32 @@ main{
     if (!img) return;
     img.alt = name || 'Team logo';
     img.onerror = function () { img.style.visibility = 'hidden'; };
-    if (src) { img.style.visibility = 'visible'; img.src = src; }
-    else { img.style.visibility = 'hidden'; img.removeAttribute('src'); }
+    if (src) {
+      img.style.visibility = 'visible';
+      img.src = src;
+    } else {
+      img.style.visibility = 'hidden';
+      img.removeAttribute('src');
+    }
   }
 
   function renderHeaderMatchup(teamA, teamB) {
     if (!headerMatchup) return;
     headerMatchup.replaceChildren();
     if (!teamA || !teamB) return;
-    var a = document.createElement('span'); a.className = 'm-team'; a.textContent = teamA;
-    var vs = document.createElement('span'); vs.className = 'm-vs'; vs.textContent = 'VS';
-    var b = document.createElement('span'); b.className = 'm-team'; b.textContent = teamB;
+
+    var a = document.createElement('span');
+    a.className = 'm-team';
+    a.textContent = teamA;
+
+    var vs = document.createElement('span');
+    vs.className = 'm-vs';
+    vs.textContent = 'VS';
+
+    var b = document.createElement('span');
+    b.className = 'm-team';
+    b.textContent = teamB;
+
     headerMatchup.append(a, vs, b);
   }
 
@@ -656,52 +954,58 @@ main{
 
   function parseStream(source, index) {
     if (!source) return null;
-    var item = (typeof source === 'string') ? { url: source } : source;
-
+    var item = typeof source === 'string' ? { url: source } : source;
     var raw = item.url || item.link || item.src || item.streamUrl || item.stream ||
-              item.mpd || item.mpdUrl || item.m3u8 || item.hls || item.file ||
-              item.manifest || item.playbackUrl || '';
+      item.mpd || item.mpdUrl || item.m3u8 || item.hls || item.file || item.manifest || item.playbackUrl || '';
     var url = String(raw || '').trim();
     if (!url) return null;
 
     if (/^https?%3a/i.test(url)) {
-      try { url = decodeURIComponent(url); } catch (e) {}
+      try { url = decodeURIComponent(url); } catch (error) {}
     }
 
-    var keys = '';
+    var pair = '';
     if (url.indexOf('|') !== -1) {
       var pieces = url.split('|');
-      url = pieces[0].trim();
-      keys = (pieces[1] || '').trim();
+      url = pieces.shift().trim();
+      pair = pieces.join('|').trim();
     }
 
-    if (!keys && typeof item.keys === 'string') keys = item.keys.trim();
-    if (!keys && typeof item.key === 'string' && item.key.indexOf(':') !== -1) keys = item.key.trim();
-    if (!keys && item.keyId && (item.key || item.kid)) {
-      keys = String(item.keyId) + ':' + String(item.key || item.kid);
-    }
+    var nestedKeys = item.keys && typeof item.keys === 'object' ? item.keys : {};
+    var rawKeyId = item.keyId || item.keyID || item.keyid || item.key_id || item.kid || item.kidId || item.kid_id ||
+      nestedKeys.keyId || nestedKeys.keyid || nestedKeys.kid || '';
+    var rawKey = item.clearKey || item.decryptionKey || item.decryptionkey || item.licenseKey ||
+      nestedKeys.key || nestedKeys.clearKey || item.key || '';
+
+    if (!pair && typeof item.keys === 'string') pair = item.keys.trim();
+    if (!pair && typeof rawKey === 'string' && rawKey.indexOf(':') !== -1) pair = rawKey.trim();
 
     var keyId = '';
     var key = '';
-    if (keys) {
-      var parts = keys.split(':');
-      if (parts.length >= 2) { keyId = normalizeHex(parts[0]); key = normalizeHex(parts[1]); }
+    if (pair) {
+      var separator = pair.indexOf(':') !== -1 ? ':' : '=';
+      var keyParts = pair.split(separator);
+      if (keyParts.length >= 2) {
+        keyId = normalizeHex(keyParts[0]);
+        key = normalizeHex(keyParts[1]);
+      }
+    } else {
+      keyId = normalizeHex(rawKeyId);
+      key = normalizeHex(rawKey);
     }
 
     var headers = {};
     var hasHeaders = false;
     if (item.headers && typeof item.headers === 'object') {
-      Object.keys(item.headers).forEach(function (k) {
-        headers[k] = item.headers[k];
+      Object.keys(item.headers).forEach(function (name) {
+        headers[name] = item.headers[name];
         hasHeaders = true;
       });
     }
-    if (item.referer) { headers['Referer'] = item.referer; hasHeaders = true; }
-    if (item.referrer) { headers['Referer'] = item.referrer; hasHeaders = true; }
-    if (item.userAgent) { headers['User-Agent'] = item.userAgent; hasHeaders = true; }
-    if (item.useragent) { headers['User-Agent'] = item.useragent; hasHeaders = true; }
+    if (item.referer) { headers.Referer = item.referer; hasHeaders = true; }
+    if (item.referrer) { headers.Referer = item.referrer; hasHeaders = true; }
 
-    var typeLabel = (typeof item.type === 'string' && item.type) ? item.type.toUpperCase() : '';
+    var typeLabel = typeof item.type === 'string' && item.type ? item.type.toUpperCase() : '';
     if (!typeLabel) {
       var mime = detectMime(url);
       if (mime === 'application/x-mpegURL') typeLabel = 'HLS';
@@ -719,12 +1023,13 @@ main{
       headers: hasHeaders ? headers : null
     };
   }
-
   function collectSources(event) {
     var groups = [event.dashStreams, event.streams, event.sources, event.links];
     if (event.event) {
-      groups.push(event.event.dashStreams, event.event.streams, event.event.sources, event.event.links);
+      groups.push(event.event.dashStreams, event.event.streams,
+                  event.event.sources, event.event.links);
     }
+
     var list = [];
     groups.forEach(function (group) {
       if (!Array.isArray(group)) return;
@@ -733,9 +1038,10 @@ main{
         if (info) list.push(info);
       });
     });
+
     if (!list.length) {
-      var single = event.stream || event.url || event.link || event.mpd || event.m3u8 ||
-                   event.streamUrl || event.playbackUrl;
+      var single = event.stream || event.url || event.link || event.mpd ||
+                   event.m3u8 || event.streamUrl || event.playbackUrl;
       if (!single && event.event) {
         single = event.event.stream || event.event.url || event.event.link ||
                  event.event.mpd || event.event.m3u8 || event.event.streamUrl;
@@ -748,6 +1054,36 @@ main{
     return list;
   }
 
+  function getMatchStatus(item) {
+    var match = item.event || {};
+    var value = match.status || item.status || '';
+    if (value) {
+      var status = String(value).toLowerCase();
+      if (status.indexOf('live') !== -1 || status.indexOf('progress') !== -1) return 'live';
+      if (status.indexOf('upcoming') !== -1 || status.indexOf('scheduled') !== -1) return 'upcoming';
+      if (status.indexOf('ended') !== -1 || status.indexOf('finished') !== -1 || status.indexOf('complete') !== -1) return 'ended';
+    }
+    var start = parseIST(match.startTimeIST);
+    var end = parseIST(match.endTimeIST);
+    if (!start) return 'upcoming';
+    if (Date.now() < start.getTime()) return 'upcoming';
+    if (end && Date.now() >= end.getTime()) return 'ended';
+    if (Date.now() - start.getTime() < LIVE_WINDOW_MS) return 'live';
+    return 'ended';
+  }
+
+  
+  function waitForLayout(el) {
+    return new Promise(function (resolve) {
+      var tries = 0;
+      (function check() {
+        if (!el || el.clientWidth > 0 || tries >= 40) return resolve();
+        tries += 1;
+        requestAnimationFrame(check);
+      })();
+    });
+  }
+
   function onPlayerError(event) {
     var detail = (event && event.detail) || {};
     var code = detail.code ? ' (code ' + detail.code + ')' : '';
@@ -758,15 +1094,19 @@ main{
 
   function ensurePlayer() {
     if (playerPromise) return playerPromise;
-    playerPromise = Promise.resolve()
+
+    playerPromise = waitForLayout(shell)
       .then(function () {
         if (!window.shaka) throw new Error('Shaka Player library did not load.');
+
         shaka.polyfill.installAll();
         if (!shaka.Player.isBrowserSupported()) {
           throw new Error('This browser does not support Shaka Player.');
         }
+
         player = new shaka.Player();
         player.addEventListener('error', onPlayerError);
+
         try {
           var net = player.getNetworkingEngine();
           if (net) {
@@ -779,10 +1119,12 @@ main{
               });
             });
           }
-        } catch (e) {}
+        } catch (e) {  }
+
         return player.attach(video);
       })
       .then(function () {
+        
         try {
           overlay = new shaka.ui.Overlay(player, shell, video);
           overlay.configure({
@@ -804,16 +1146,20 @@ main{
             }
           });
         } catch (e) {
+          
           video.controls = true;
         }
         return player;
       });
+
     playerPromise.catch(function () { playerPromise = null; });
+
     return playerPromise;
   }
 
   function playSource(info, button) {
     if (!info || !info.url) return Promise.resolve();
+
     var token = ++loadToken;
     setLoader(true);
     sourceNote.textContent = '';
@@ -823,8 +1169,10 @@ main{
     return ensurePlayer()
       .then(function () {
         if (token !== loadToken) return null;
+
         var clearKeys = {};
         if (info.keyId && info.key) clearKeys[info.keyId] = info.key;
+
         player.configure({
           drm: { clearKeys: clearKeys, servers: {} },
           manifest: {
@@ -857,24 +1205,30 @@ main{
             switchInterval: 4
           }
         });
+
         var mime = detectMime(info.url);
         if (mime) return player.load(info.url, null, mime);
         return player.load(info.url);
       })
       .then(function (result) {
         if (result === null || token !== loadToken) return;
+
         setLoader(false);
         if (button) {
           var state = button.querySelector('.channel-state');
           if (state) state.textContent = 'PLAYING';
         }
+
         var attempt = video.play();
         if (attempt && attempt.catch) attempt.catch(function () {});
       })
       .catch(function (error) {
         if (token !== loadToken) return;
+
         setLoader(false);
+
         if (error && error.code === 7000) return;
+
         if (button) {
           var state = button.querySelector('.channel-state');
           if (state) state.textContent = 'FAILED';
@@ -886,26 +1240,32 @@ main{
 
   function activateChannel(button, list, index) {
     var buttons = channelGrid.querySelectorAll('.channel');
+
     Array.prototype.forEach.call(buttons, function (el) {
       el.classList.remove('active');
       var state = el.querySelector('.channel-state');
       if (state) state.textContent = 'SELECT';
     });
+
     button.classList.add('active');
     var state = button.querySelector('.channel-state');
     if (state) state.textContent = 'LOADING';
+
     playSource(list[index], button);
   }
 
   function renderChannels(list) {
     setText('channelCount', list.length ? '(' + list.length + ')' : '');
     channelGrid.replaceChildren();
+
     if (!list.length) {
       sourceNote.textContent = 'No stream sources are listed for this event.';
       return;
     }
     sourceNote.textContent = '';
+
     var buttons = [];
+
     list.forEach(function (info, index) {
       var button = document.createElement('button');
       button.type = 'button';
@@ -939,6 +1299,7 @@ main{
         activateChannel(button, list, index);
       });
     });
+
     if (buttons.length) activateChannel(buttons[0], list, 0);
   }
 
@@ -982,6 +1343,43 @@ main{
     }
   }
 
+  function setBackLink(mode) {
+    if (mode === 'player') {
+      backLink.href = window.location.pathname;
+      backLabel.textContent = 'All Matches';
+      backLink.setAttribute('aria-label', 'All Matches');
+    } else {
+      backLink.href = './';
+      backLabel.textContent = 'Home';
+      backLink.setAttribute('aria-label', 'Home');
+    }
+  }
+
+  function showLandingView(notice) {
+    viewLanding.hidden = false;
+    viewPlayer.hidden = true;
+    setBackLink('landing');
+
+    headerMatchup.replaceChildren();
+    var span = document.createElement('span');
+    span.className = 'm-team';
+    span.textContent = 'All Matches';
+    headerMatchup.append(span);
+
+    if (notice) {
+      landingNotice.textContent = notice;
+      landingNotice.hidden = false;
+    } else {
+      landingNotice.hidden = true;
+    }
+  }
+
+  function showPlayerView() {
+    viewLanding.hidden = true;
+    viewPlayer.hidden = false;
+    setBackLink('player');
+  }
+
   function fetchEvents() {
     return fetch(API_URL, { cache: 'no-store' })
       .then(function (response) {
@@ -994,52 +1392,190 @@ main{
       });
   }
 
-  function loadEventById(id) {
+  function getInitials(name) {
+    if (!name) return '?';
+    var parts = String(name).trim().split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return parts[0].substring(0, 3).toUpperCase();
+  }
+
+  function createLogoWrap(src, name) {
+    var wrap = document.createElement('div');
+    wrap.className = 'card-logo-wrap';
+
+    var fallback = document.createElement('span');
+    fallback.className = 'card-logo-fallback';
+    fallback.textContent = getInitials(name);
+    wrap.append(fallback);
+
+    if (src) {
+      var img = document.createElement('img');
+      img.className = 'card-logo';
+      img.alt = name || 'Team logo';
+      img.loading = 'lazy';
+      img.referrerPolicy = 'no-referrer';
+      img.onerror = function () { img.remove(); };
+      img.src = src;
+      wrap.append(img);
+    }
+    return wrap;
+  }
+
+  function createMatchCard(item) {
+    var match = item.event || {};
+    var teamA = match.teamA || '';
+    var teamB = match.teamB || '';
+    var title = match.name || item.title ||
+      (teamA && teamB ? teamA + ' vs ' + teamB : 'Live Event');
+
+    var status = getMatchStatus(item);
+    var statusLabel = status === 'live' ? 'LIVE'
+                    : status === 'ended' ? 'ENDED'
+                    : 'UPCOMING';
+
+    var card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'match-card';
+    card.dataset.status = status;
+
+    var top = document.createElement('div');
+    top.className = 'card-top';
+
+    var badge = document.createElement('span');
+    badge.className = 'card-status ' + status;
+    badge.textContent = statusLabel;
+
+    var time = document.createElement('span');
+    time.className = 'card-time';
+    time.textContent = fmtMatchTime(match.startTimeIST);
+
+    top.append(badge, time);
+
+    var teams = document.createElement('div');
+    teams.className = 'card-teams';
+
+    var leftTeam = document.createElement('div');
+    leftTeam.className = 'card-team';
+    leftTeam.append(createLogoWrap(match.teamAFlag, teamA));
+
+    var leftName = document.createElement('span');
+    leftName.className = 'card-name';
+    leftName.textContent = teamA || 'TBD';
+    leftTeam.append(leftName);
+
+    var vs = document.createElement('span');
+    vs.className = 'card-vs';
+    vs.textContent = 'VS';
+
+    var rightTeam = document.createElement('div');
+    rightTeam.className = 'card-team right';
+
+    var rightName = document.createElement('span');
+    rightName.className = 'card-name';
+    rightName.textContent = teamB || 'TBD';
+
+    rightTeam.append(rightName);
+    rightTeam.append(createLogoWrap(match.teamBFlag, teamB));
+
+    teams.append(leftTeam, vs, rightTeam);
+
+    card.append(top, teams);
+
+    if (title && title !== teamA + ' vs ' + teamB) {
+      var titleEl = document.createElement('div');
+      titleEl.className = 'card-title';
+      titleEl.textContent = title;
+      card.append(titleEl);
+    }
+
+    card.addEventListener('click', function () {
+      window.location.href = '?id=' + encodeURIComponent(item.id);
+    });
+
+    return card;
+  }
+
+  function sortEvents(events) {
+    var order = { live: 0, upcoming: 1, ended: 2 };
+
+    return events.slice().sort(function (a, b) {
+      var sa = getMatchStatus(a);
+      var sb = getMatchStatus(b);
+      if (order[sa] !== order[sb]) return order[sa] - order[sb];
+
+      var ta = parseIST((a.event || {}).startTimeIST);
+      var tb = parseIST((b.event || {}).startTimeIST);
+
+      if (!ta && !tb) return 0;
+      if (!ta) return 1;
+      if (!tb) return -1;
+
+      if (sa === 'live' || sa === 'ended') return tb - ta;
+      return ta - tb;
+    });
+  }
+
+  function renderLanding(events) {
+    matchGrid.replaceChildren();
+
+    if (!events || !events.length) {
+      landingEmpty.hidden = false;
+      landingEmpty.textContent = 'No events available right now.';
+      return;
+    }
+    landingEmpty.hidden = true;
+
+    sortEvents(events).forEach(function (item) {
+      if (!item) return;
+      matchGrid.append(createMatchCard(item));
+    });
+  }
+
+  function loadLanding(notice) {
+    showLandingView(notice);
+    return fetchEvents()
+      .then(function (events) { renderLanding(events); })
+      .catch(function () {
+        matchGrid.replaceChildren();
+        landingEmpty.hidden = false;
+        landingEmpty.textContent = 'Unable to load events. Please try again later.';
+      });
+  }
+
+  function loadPlayerById(id) {
     return fetchEvents()
       .then(function (events) {
         var selected = null;
         for (var i = 0; i < events.length; i++) {
           if (String(events[i] && events[i].id) === id) { selected = events[i]; break; }
         }
-        if (!selected) {
-          showError('Event ' + id + ' not found',
-            'No match data was returned for this event ID.');
-          return;
-        }
-        renderEvent(selected);
-      })
-      .catch(function () {
-        showError('Unable to load event data',
-          'The API request failed. Check the API response or its CORS settings.');
-      });
-  }
 
-  function loadFirstEvent() {
-    return fetchEvents()
-      .then(function (events) {
-        if (!events.length) {
-          showError('No events available', 'The API returned no events to play.');
+        if (!selected) {
+          showLandingView('Event ' + id + ' was not found. Showing all matches.');
+          renderLanding(events);
           return;
         }
-        var selected = null;
-        for (var i = 0; i < events.length; i++) {
-          if (collectSources(events[i]).length) { selected = events[i]; break; }
-        }
-        if (!selected) selected = events[0];
+
+        showPlayerView();
         renderEvent(selected);
       })
       .catch(function () {
-        showError('Unable to load event data',
-          'The API request failed. Check the API response or its CORS settings.');
+        showLandingView('Unable to load events. Please try again later.');
+        matchGrid.replaceChildren();
+        landingEmpty.hidden = false;
+        landingEmpty.textContent = 'Unable to load events. Please try again later.';
       });
   }
 
   function initPopup() {
     var popup = byId('waOverlay');
     if (!popup) return;
+
     setTimeout(function () { popup.classList.add('show'); }, 2000);
+
     var already = byId('btnAlready');
     var join = byId('btnJoin');
+
     if (already) {
       already.addEventListener('click', function () { popup.classList.remove('show'); });
     }
@@ -1055,11 +1591,14 @@ main{
     function onGesture(event) {
       var target = event && event.target;
       if (target && target.closest && target.closest('.shaka-controls-container')) return;
+
       video.muted = false;
+
       ['pointerdown', 'touchstart', 'keydown'].forEach(function (name) {
         document.removeEventListener(name, onGesture, true);
       });
     }
+
     ['pointerdown', 'touchstart', 'keydown'].forEach(function (name) {
       document.addEventListener(name, onGesture, true);
     });
@@ -1071,7 +1610,10 @@ main{
     bindUnmute();
 
     if (directUrl) {
-      var directInfo = parseStream({ url: directUrl, keys: directKeys || '' }, 0);
+      showPlayerView();
+      renderHeaderMatchup('Direct', 'Stream');
+
+      var directInfo = parseStream({ url: directUrl, keys: directKeys || '', keyId: directKeyId, key: directKey }, 0);
       if (directInfo) {
         setText('matchTitle', 'Direct stream');
         renderChannels([directInfo]);
@@ -1082,16 +1624,16 @@ main{
     }
 
     if (!requestedId) {
-      loadFirstEvent();
+      loadLanding();
       return;
     }
 
     if (!/^[1-9]\d*$/.test(requestedId)) {
-      showError('Invalid id parameter', 'The id value must be a positive integer.');
+      loadLanding('Invalid event ID. Showing all matches.');
       return;
     }
 
-    loadEventById(requestedId);
+    loadPlayerById(requestedId);
   }
 
   if (document.readyState === 'loading') {
