@@ -1,8 +1,3 @@
-/*
- * Football / Cricket schedule rails.
- * Presentation-only: reads teams, logos, competition, status and times only.
- * No stream payload, DRM, key or player information is read or rendered here.
- */
 (function () {
   'use strict';
 
@@ -13,16 +8,13 @@
   var cachePrefix = 'cnptv-home-events-v3:';
   var sections = [
     { key: 'football', api: apis.football || '', trackId: 'footballTrack', statusId: 'footballStatus', previousId: 'footballPrevious', nextId: 'footballNext', label: 'Football' },
-    { key: 'cricket', api: apis.cricket || '', trackId: 'cricketTrack', statusId: 'cricketStatus', previousId: 'cricketPrevious', nextId: 'cricketNext', label: 'Cricket' }
+    { key: 'cricket',  api: apis.cricket  || '', trackId: 'cricketTrack',  statusId: 'cricketStatus',  previousId: 'cricketPrevious',  nextId: 'cricketNext',  label: 'Cricket'  }
   ];
 
   function escapeHtml(value) {
     return String(value == null ? '' : value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
   function safeImageUrl(value) {
@@ -30,9 +22,7 @@
     try {
       var parsed = new URL(value.trim());
       return parsed.protocol === 'https:' || parsed.protocol === 'http:' ? parsed.href : '';
-    } catch (error) {
-      return '';
-    }
+    } catch (error) { return ''; }
   }
 
   function initials(name) {
@@ -86,7 +76,6 @@
   function formatUpcomingTime(value) {
     var match = String(value || '').match(/(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})/);
     if (!match) return value ? String(value).replace(/\s+IST$/i, ' IST') : 'Time to be confirmed';
-
     var target = parseIstDate(value);
     var difference = target ? Math.round((istDayValue(target) - istDayValue(new Date())) / 86400000) : 9;
     var hour = Number(match[4]);
@@ -123,7 +112,7 @@
   function presentationEvent(item) {
     var event = item && item.event || {};
     return {
-      id: String(item && item.id || ''),
+      id: String(item && (item.id || item.matchId || item.match_id || item.matchID || item.stream_id) || ''),
       slug: String(item && item.slug || ''),
       title: String(item && item.title || event.name || ''),
       status: normaliseStatus(item),
@@ -152,17 +141,13 @@
       var stored = window.localStorage.getItem(cacheKey(key));
       var parsed = stored ? JSON.parse(stored) : null;
       return parsed && Array.isArray(parsed.events) ? prepareEvents(parsed.events) : [];
-    } catch (error) {
-      return [];
-    }
+    } catch (error) { return []; }
   }
 
   function writeCachedEvents(key, events) {
     try {
       window.localStorage.setItem(cacheKey(key), JSON.stringify({ savedAt: Date.now(), events: events }));
-    } catch (error) {
-      /* Storage can be unavailable in private browsing; live rendering still works. */
-    }
+    } catch (error) {}
   }
 
   function fetchJsonWithTimeout(url) {
@@ -171,7 +156,6 @@
       var options = { cache: 'no-store', headers: { Accept: 'application/json' } };
       var settled = false;
       var timeout;
-
       if (controller) options.signal = controller.signal;
       function finish(error, payload) {
         if (settled) return;
@@ -179,12 +163,10 @@
         window.clearTimeout(timeout);
         if (error) reject(error); else resolve(payload);
       }
-
       timeout = window.setTimeout(function () {
         if (controller) controller.abort();
         finish(new Error('Request timed out'));
       }, requestTimeout);
-
       fetch(url, options)
         .then(function (response) {
           if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -201,6 +183,13 @@
   }
 
   function eventUrl(sectionInfo, item) {
+    var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var sectionCfg = (cfg.sections || {})[sectionInfo.key];
+    var helper = window.CnpTVHelper;
+    if (sectionCfg && helper && sectionCfg.link) {
+      var eventId = helper.extractId(item) || item.slug || '';
+      return helper.buildUrl(sectionCfg, eventId);
+    }
     var params = new URLSearchParams();
     params.set('sport', sectionInfo.key);
     if (item.slug) params.set('slug', item.slug);
@@ -214,12 +203,18 @@
       return '<div class="event-meta"><span class="event-time-state live">Live for</span><time class="event-live-duration" data-live-start="' + escapeHtml(time) + '">' + escapeHtml(formatElapsed(time)) + '</time></div>';
     }
     if (status === 'upcoming') {
-      return '<div class="event-meta"><span class="event-time-state upcoming">Upcoming</span><time class="event-schedule-time">' + escapeHtml(formatUpcomingTime(time)) + '</time></div>';
+      return '<div class="event-meta"><span class="event-time-state upcoming">Starts</span><time class="event-schedule-time">' + escapeHtml(formatUpcomingTime(time)) + '</time></div>';
     }
     return '<div class="event-meta"><span class="event-time-state">' + escapeHtml(category) + '</span><time class="event-schedule-time">Finished</time></div>';
   }
 
   function renderCard(item, sectionInfo) {
+    var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var upcomingClickable = cfg.upcomingClickable !== false;
+    var labels = cfg.labels || {};
+    var watchLabel = labels.watchNow || 'Watch Now';
+    var comingSoonLabel = labels.comingSoon || 'Coming Soon';
+
     var event = item && item.event || {};
     var status = normaliseStatus(item);
     var eventName = event.name || item.title || sectionInfo.label + ' Event';
@@ -229,12 +224,46 @@
     var teamB = event.teamB || 'Team B';
     var imageA = safeImageUrl(event.teamAFlag || event.teamALogo || event.teamAImage || '');
     var imageB = safeImageUrl(event.teamBFlag || event.teamBLogo || event.teamBImage || '');
-    var statusChip = status === 'upcoming' ? '' : '<span class="event-status-chip ' + status + '">' + escapeHtml(statusText(status)) + '</span>';
 
-    return '<a class="event-match-card event-status-' + status + '" href="' + escapeHtml(eventUrl(sectionInfo, item)) + '" aria-label="View ' + escapeHtml(eventName) + '">' +
+    var isUpcoming = status === 'upcoming';
+    var canClick = !isUpcoming || upcomingClickable;
+    var url = eventUrl(sectionInfo, item);
+
+    var buttonLabel = isUpcoming ? comingSoonLabel : watchLabel;
+    var buttonClass = 'event-watch-label' + (isUpcoming ? ' upcoming' : status === 'ended' ? ' ended' : '');
+    var watchButton = '<span class="' + buttonClass + '">' +
+      (!isUpcoming ? '<span aria-hidden="true">&#9654;</span>' : '') +
+      escapeHtml(buttonLabel) + '</span>';
+
+    var statusChip = isUpcoming
+      ? '<span class="event-status-chip upcoming">Upcoming</span>'
+      : '<span class="event-status-chip ' + status + '">' + escapeHtml(statusText(status)) + '</span>';
+
+    var cardClass = 'event-match-card event-status-' + status + (!canClick ? ' event-no-hover' : '');
+    var cardOpen = canClick
+      ? '<a class="' + cardClass + '" href="' + escapeHtml(url) + '" aria-label="' + escapeHtml(eventName) + '">'
+      : '<div class="' + cardClass + '" aria-label="' + escapeHtml(eventName) + '">';
+    var cardClose = canClick ? '</a>' : '</div>';
+
+    return cardOpen +
       '<div class="event-match-visual"><div class="event-match-topline"><span class="event-sport-chip">' + escapeHtml(category) + '</span>' + statusChip + '</div>' +
-      '<h3 class="event-match-name" title="' + escapeHtml(eventName) + '">' + escapeHtml(eventName) + '</h3><div class="event-teams-row">' + teamMarkup(teamA, imageA) + '<span class="event-versus" aria-hidden="true">VS</span>' + teamMarkup(teamB, imageB) + '</div></div>' +
-      '<div class="event-match-info"><p class="event-league" title="' + escapeHtml(league) + '">' + escapeHtml(league) + '</p><div class="event-match-footer">' + timingMarkup(item, status, category) + '<span class="event-watch-label"><span aria-hidden="true">&#9654;</span>Watch Now</span></div></div></a>';
+      '<h3 class="event-match-name" title="' + escapeHtml(eventName) + '">' + escapeHtml(eventName) + '</h3>' +
+      '<div class="event-teams-row">' + teamMarkup(teamA, imageA) + '<span class="event-versus" aria-hidden="true">VS</span>' + teamMarkup(teamB, imageB) + '</div></div>' +
+      '<div class="event-match-info"><p class="event-league" title="' + escapeHtml(league) + '">' + escapeHtml(league) + '</p>' +
+      '<div class="event-match-footer">' + timingMarkup(item, status, category) + watchButton + '</div></div>' +
+      cardClose;
+  }
+
+  function viewAllCardHtml(sectionInfo) {
+    var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var labels = cfg.labels || {};
+    var sectionCfg = (cfg.sections || {})[sectionInfo.key] || {};
+    var link = escapeHtml(sectionCfg.viewAllLink || '/events/');
+    var label = escapeHtml(labels.viewAll || 'View All Events');
+    return '<a class="event-view-all-card" href="' + link + '" aria-label="' + label + '">' +
+      '<span class="view-all-plus" aria-hidden="true">+</span>' +
+      '<span class="view-all-label">' + label + '</span>' +
+      '</a>';
   }
 
   function skeletonMarkup(count) {
@@ -256,7 +285,15 @@
     if (!node) return;
     var live = events.filter(function (item) { return normaliseStatus(item) === 'live'; }).length;
     var upcoming = events.filter(function (item) { return normaliseStatus(item) === 'upcoming'; }).length;
-    node.textContent = live ? live + (live === 1 ? ' event live' : ' events live') : upcoming ? upcoming + (upcoming === 1 ? ' upcoming event' : ' upcoming events') : 'No events live';
+    var text;
+    if (live) {
+      text = live + (live === 1 ? ' Event Live' : ' Events Live');
+    } else if (upcoming) {
+      text = upcoming + (upcoming === 1 ? ' Upcoming Event' : ' Upcoming Events');
+    } else {
+      text = 'No Events Live';
+    }
+    node.textContent = text;
   }
 
   function renderError(track, label, retry) {
@@ -270,12 +307,17 @@
   }
 
   function renderEvents(track, statusNode, sectionInfo, events) {
+    var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var cardLimit = Number(cfg.cardLimit) || 10;
+
     if (!events.length) {
       renderEmpty(track, sectionInfo.label);
-      if (statusNode) statusNode.textContent = 'No events live';
+      if (statusNode) statusNode.textContent = 'No Events Live';
       return false;
     }
-    track.innerHTML = events.map(function (item) { return renderCard(item, sectionInfo); }).join('');
+
+    var visibleEvents = events.slice(0, cardLimit);
+    track.innerHTML = visibleEvents.map(function (item) { return renderCard(item, sectionInfo); }).join('') + viewAllCardHtml(sectionInfo);
     setImageFallbacks(track);
     setSectionStatus(statusNode, events);
     updateLiveDurations();
@@ -322,7 +364,7 @@
     function load() {
       if (!sectionInfo.api) {
         if (!hasCachedSchedule) renderError(track, sectionInfo.label, load);
-        if (statusNode && !hasCachedSchedule) statusNode.textContent = 'Schedule unavailable';
+        if (statusNode && !hasCachedSchedule) statusNode.textContent = 'Schedule Unavailable';
         return;
       }
       fetchJsonWithTimeout(sectionInfo.api).then(function (payload) {
@@ -333,7 +375,7 @@
         if (window.console && console.warn) console.warn('[live-events] ' + sectionInfo.key + ' could not load', error);
         if (!hasCachedSchedule) {
           renderError(track, sectionInfo.label, load);
-          if (statusNode) statusNode.textContent = 'Schedule unavailable';
+          if (statusNode) statusNode.textContent = 'Schedule Unavailable';
         }
       });
     }
