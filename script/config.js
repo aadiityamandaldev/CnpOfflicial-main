@@ -108,5 +108,20 @@ if (typeof CNPTV_CONF !== "undefined" && CNPTV_CONF) {
 }
 
 if(typeof CNPTV_CONF!=='undefined'&&CNPTV_CONF){
-  CNPTV_CONF.heroMatches = [];
+  CNPTV_CONF.heroMatches = [
+    {
+      "tournament": "INDIA TOUR OF NEW ZEALAND 2026 - 1ST T20I",
+      "homeTeam": {
+        "name": "India",
+        "logo": "https://flagpedia.net/data/flags/w1160/in.webp"
+      },
+      "awayTeam": {
+        "name": "New Zealand",
+        "logo": "https://flagpedia.net/data/flags/w1160/nz.webp"
+      },
+      "poster": "https://ik.imagekit.io/sayanmete/India%20vs%20New%20Zealand%20T20%20match%20poster%20by%20Sayan",
+      "date": "22 OCT 2026 - 12:10 PM",
+      "watchUrl": "/home/live/ind-vs-nz.html"
+    }
+  ];
 }
