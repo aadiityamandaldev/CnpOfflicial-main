@@ -39,15 +39,15 @@
       sony:                "https://raw.githubusercontent.com/kajju027/SonyLiv-Events-Json/refs/heads/main/sonyliv.json"
     },
     sections: {
-      football:    { link: "/watch/?src=football", idMode: "param", idKey: "id", viewAllLink: "/events/?sport=football" },
-      cricket:     { link: "/watch/?src=cricket",  idMode: "param", idKey: "id", viewAllLink: "/events/?sport=cricket"  },
-      willow:      { link: "/az/",                 idMode: "param", idKey: "id", viewAllLink: "/events/?sport=willow"   },
-      fancode:     { link: "/fc/play/",            idMode: "param", idKey: "id", viewAllLink: "/events/?sport=fancode"  },
-      worldSports: { link: "",                     idMode: "param", idKey: "id", viewAllLink: "/events/?sport=world-sports" },
-      sonyLiv:     { link: "/player/sony",         idMode: "param", idKey: "id", viewAllLink: "/events/?sport=sony-liv" }
+      football:    { link: "/watch/football/",   idMode: "param", idKey: "id", viewAllLink: "/watch/football/"  },
+      cricket:     { link: "/watch/cricket/",    idMode: "param", idKey: "id", viewAllLink: "/watch/cricket/"   },
+      willow:      { link: "/watch/willow/",     idMode: "param", idKey: "id", viewAllLink: "/watch/willow/"    },
+      fancode:     { link: "/watch/fancode/pz/", idMode: "param", idKey: "id", viewAllLink: "/watch/fancode/"   },
+      worldSports: { link: "/watch/wwsports/",   idMode: "param", idKey: "id", viewAllLink: "/watch/wwsports/"  },
+      sonyLiv:     { link: "/watch/sliv/",       idMode: "param", idKey: "id", viewAllLink: "/watch/sliv/"      }
     },
     cardLimit: 10,
-    upcomingClickable: false,
+    upcomingClickable: true,
     siteBase: "",
     labels: {
       watchNow:   "Watch Now",
@@ -56,9 +56,9 @@
     },
     playerBase: "",
     routes: {
-      willowPlayer:  "/az/",
-      fancodePlayer: "/fc/play/",
-      sonyPlayer:    "/player/sony"
+      willowPlayer:  "/watch/willow/",
+      fancodePlayer: "/watch/fancode/pz/",
+      sonyPlayer:    "/watch/sliv/"
     },
     willowPlayerMode: "stream",
     heroMatches: []
