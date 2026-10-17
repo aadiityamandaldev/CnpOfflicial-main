@@ -9,6 +9,29 @@
   var PLAYER_BASE  = cfg.playerBase || '';
   var EAGER_CARDS  = 5;
 
+  /* ==== 3 sources — 2nd (id=3, "Ada Fee") is default ==== */
+  var SERVER_MAP = [
+    { id: 1, label: 'Live Now' },
+    { id: 3, label: 'Ada Fee' },
+    { id: 7, label: 'ULTRQ HD 4K' }
+  ];
+  var DEFAULT_SERVER_ID = 3;
+
+  /* ==== Self-contained style for the default button (no external CSS needed) ==== */
+  if (!document.getElementById('willow-default-btn-style')) {
+    var styleEl = document.createElement('style');
+    styleEl.id = 'willow-default-btn-style';
+    styleEl.textContent =
+      '.md-watch-btn.md-watch-btn-default{' +
+        'background:linear-gradient(135deg,rgba(255,184,0,.22),rgba(255,136,0,.12));' +
+        'border-color:rgba(255,184,0,.6);color:#ffb800;' +
+        'box-shadow:0 0 0 1px rgba(255,184,0,.25),0 4px 14px rgba(255,136,0,.22);' +
+      '}' +
+      '.md-watch-btn.md-watch-btn-default .md-watch-btn-icon,' +
+      '.md-watch-btn.md-watch-btn-default .md-watch-language{color:#ffb800;}';
+    document.head.appendChild(styleEl);
+  }
+
   var track      = document.getElementById('willowLiveTrack');
   var arrowLeft  = document.getElementById('willowLiveArrowLeft');
   var arrowRight = document.getElementById('willowLiveArrowRight');
@@ -48,6 +71,30 @@
       }
     }
     return [];
+  }
+
+  /* ==== Only digits from the match ID (e.g. "CB12345_EN" -> "12345") ==== */
+  function numericId(val) {
+    return String(val || '').replace(/[^0-9]/g, '');
+  }
+
+  /* ==== Builds URL in the form ?CB{number}&ser={serverId} ==== */
+  function buildPlayerUrl(matchId, serverId) {
+    var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var secCfg = ((cfgObj.sections || {}).willow) || {};
+    var secLink = String(secCfg.link || '');
+    var base;
+    if (secLink) {
+      base = secLink;
+    } else {
+      var routeBase = PLAYER_BASE ? String(PLAYER_BASE).replace(/\/+$/, '') : '';
+      var route = PLAYER_ROUTE.charAt(0) === '/' ? PLAYER_ROUTE : '/' + PLAYER_ROUTE;
+      base = routeBase + route;
+    }
+    var nid = numericId(matchId);
+    if (!nid) return base;
+    var srv = serverId || DEFAULT_SERVER_ID;
+    return base + '?CB' + nid + '&ser=' + srv;
   }
 
   function buildTitle(m) {
@@ -92,23 +139,6 @@
       if (derived) return derived;
     }
     return '';
-  }
-
-  function buildPlayerUrl(matchId) {
-    var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
-    var secCfg = ((cfgObj.sections || {}).willow) || {};
-    var secLink = String(secCfg.link || '');
-    var base;
-    if (secLink) {
-      base = secLink;
-    } else {
-      var routeBase = PLAYER_BASE ? String(PLAYER_BASE).replace(/\/+$/, '') : '';
-      var route = PLAYER_ROUTE.charAt(0) === '/' ? PLAYER_ROUTE : '/' + PLAYER_ROUTE;
-      base = routeBase + route;
-    }
-    var id = String(matchId || '').trim();
-    if (!id) return base;
-    return base + '?id=' + encodeURIComponent(id);
   }
 
   function statusInfo(raw) {
@@ -201,11 +231,23 @@
       var watchHtml = '';
 
       if (isUpcoming) {
-        watchHtml = '<div class="md-actions"><a class="md-watch-btn md-coming-soon" href="' + escapeHtml(viewAllLink) + '">' + escapeHtml(comingSoonLabel) + '</a></div>';
+        watchHtml = '<div class="md-actions"><a class="md-watch-btn md-coming-soon" href="' +
+          escapeHtml(viewAllLink) + '">' + escapeHtml(comingSoonLabel) + '</a></div>';
       } else if (id) {
-        var href = escapeHtml(buildPlayerUrl(id));
-        watchHtml = '<div class="md-actions"><a class="md-watch-btn" href="' + href + '" aria-label="Watch ' + imgAlt + '">' +
-          '<span class="md-watch-btn-icon" aria-hidden="true">&#9654;</span>' + escapeHtml(watchLabel) + '</a></div>';
+        var buttons = '';
+        for (var k = 0; k < SERVER_MAP.length; k++) {
+          var srv = SERVER_MAP[k];
+          var href = escapeHtml(buildPlayerUrl(id, srv.id));
+          var isDefault = srv.id === DEFAULT_SERVER_ID;
+          var cls = 'md-watch-btn' + (isDefault ? ' md-watch-btn-default' : '');
+          buttons += '<a class="' + cls + '" href="' + href + '" ' +
+            'aria-label="Watch ' + imgAlt + ' on ' + escapeHtml(srv.label) + '">' +
+            '<span class="md-watch-btn-icon" aria-hidden="true">&#9654;</span>' +
+            '<span>' + escapeHtml(watchLabel) + '</span>' +
+            '<span class="md-watch-language">' + escapeHtml(srv.label) + '</span>' +
+            '</a>';
+        }
+        watchHtml = '<div class="md-actions">' + buttons + '</div>';
       }
 
       var matchupHtml = '';
