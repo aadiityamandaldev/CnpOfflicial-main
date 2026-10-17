@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#050505">
 <meta name="referrer" content="no-referrer">
-<title>Live Event Player</title>
+<title>Live Event</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -19,7 +19,6 @@
   --muted:#9b9ba4;
   --orange:#f97316;
   --green:#25d366;
-  --display:"Inter",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html,body{
@@ -38,12 +37,12 @@ button{font:inherit}
   position:sticky;
   top:0;
   z-index:30;
-  min-height:68px;
+  min-height:58px;
   display:grid;
   grid-template-columns:1fr auto 1fr;
   align-items:center;
   gap:12px;
-  padding:8px clamp(12px,3vw,28px);
+  padding:7px clamp(12px,3vw,28px);
   background:rgba(5,5,5,.94);
   backdrop-filter:blur(18px);
   border-bottom:1px solid var(--line);
@@ -71,29 +70,18 @@ button{font:inherit}
 .back-link svg{width:19px;height:19px}
 .header-center{
   display:flex;
-  flex-direction:column;
   align-items:center;
-  gap:4px;
+  justify-content:center;
   min-width:0;
   text-align:center;
 }
-.brand{
-  font-size:.86rem;
-  font-weight:900;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  color:#f2f2f4;
-  line-height:1;
-  white-space:nowrap;
-}
-.brand span{color:var(--orange)}
 .matchup{
   display:flex;
   align-items:center;
   justify-content:center;
   gap:8px;
-  max-width:min(74vw,440px);
-  font-size:.75rem;
+  max-width:min(78vw,520px);
+  font-size:.78rem;
   font-weight:800;
   line-height:1.1;
   color:#e6e6ec;
@@ -101,7 +89,7 @@ button{font:inherit}
   overflow:hidden;
 }
 .matchup .m-team{
-  max-width:38vw;
+  max-width:40vw;
   overflow:hidden;
   text-overflow:ellipsis;
 }
@@ -116,9 +104,9 @@ button{font:inherit}
 
 main{
   width:100%;
-  max-width:1080px;
+  max-width:1280px;
   margin:0 auto;
-  padding:clamp(14px,2.4vw,24px) clamp(12px,2.4vw,24px) 28px;
+  padding:clamp(10px,2vw,22px) clamp(10px,2vw,22px) 28px;
   flex:1;
 }
 
@@ -130,7 +118,7 @@ main{
   background:#000;
   border:1px solid rgba(255,255,255,.1);
   border-radius:16px;
-  box-shadow:0 22px 62px rgba(0,0,0,.6);
+  box-shadow:0 24px 68px rgba(0,0,0,.62);
 }
 .player-shell video{
   position:absolute;
@@ -141,15 +129,7 @@ main{
   object-fit:contain;
   background:#000;
 }
-.player-shell .shaka-video-container{
-  position:absolute!important;
-  inset:0!important;
-  width:100%!important;
-  height:100%!important;
-  background:#000!important;
-}
 .shaka-spinner-container{display:none!important}
-.shaka-controls-container{border-radius:16px}
 .shaka-controls-container button{color:#fff!important}
 
 #loader{
@@ -171,7 +151,7 @@ main{
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .match-panel{
-  max-width:940px;
+  max-width:1000px;
   margin:18px auto 0;
   padding:18px;
   background:linear-gradient(145deg,rgba(18,18,22,.96),rgba(10,10,12,.92));
@@ -238,7 +218,7 @@ main{
   min-height:18px;
 }
 
-.channels{max-width:940px;margin:20px auto 0}
+.channels{max-width:1000px;margin:20px auto 0}
 .section-title{
   display:flex;
   align-items:center;
@@ -323,7 +303,7 @@ main{
 
 .site-footer{margin-top:auto;border-top:1px solid var(--line);background:#080809}
 .footer-body{
-  max-width:1040px;
+  max-width:1280px;
   margin:0 auto;
   padding:22px clamp(16px,3vw,28px);
   display:flex;
@@ -364,7 +344,7 @@ main{
 .footer-nav svg{width:15px;height:15px;color:var(--orange)}
 .footer-bottom{border-top:1px solid rgba(255,255,255,.055)}
 .footer-bottom-inner{
-  max-width:1040px;
+  max-width:1280px;
   margin:0 auto;
   padding:11px clamp(16px,3vw,28px);
   display:flex;
@@ -462,9 +442,8 @@ main{
 }
 
 @media(max-width:650px){
-  .site-header{min-height:60px}
-  .brand{font-size:.76rem;letter-spacing:.14em}
-  .matchup{font-size:.7rem;gap:6px}
+  .site-header{min-height:50px}
+  .matchup{font-size:.72rem;gap:6px}
   .team-logo{width:44px;height:44px}
   .match-panel{padding:15px 12px}
   .channel-grid{grid-template-columns:1fr}
@@ -491,7 +470,6 @@ main{
     <span>Home</span>
   </a>
   <div class="header-center">
-    <div class="brand"><span>Live</span> Player</div>
     <div class="matchup" id="headerMatchup"></div>
   </div>
   <span class="spacer" aria-hidden="true"></span>
@@ -567,6 +545,7 @@ main{
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/mux.js@7/dist/mux.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/shaka-player.ui.min.js"></script>
 <script>
 (function () {
@@ -592,10 +571,10 @@ main{
   var playerPromise = null;
   var loadToken = 0;
   var clockTimer = null;
+  var activeHeaders = null;
+  var activeOrigin = '';
 
-  function byId(id) {
-    return document.getElementById(id);
-  }
+  function byId(id) { return document.getElementById(id); }
 
   function setText(id, value) {
     var el = byId(id);
@@ -631,23 +610,14 @@ main{
   }
 
   function startClock(startValue) {
-    if (clockTimer) {
-      clearInterval(clockTimer);
-      clockTimer = null;
-    }
+    if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
     var el = byId('elapsedText');
     var start = parseIST(startValue);
-    if (!el || !start) {
-      setText('elapsedText', '');
-      return;
-    }
+    if (!el || !start) { setText('elapsedText', ''); return; }
     function tick() {
       var diff = Math.floor((Date.now() - start.getTime()) / 1000);
-      if (diff < 0) {
-        el.textContent = 'Starts in ' + fmtDuration(-diff);
-      } else {
-        el.textContent = 'Elapsed since start: ' + fmtDuration(diff);
-      }
+      if (diff < 0) el.textContent = 'Starts in ' + fmtDuration(-diff);
+      else el.textContent = 'Elapsed since start: ' + fmtDuration(diff);
     }
     tick();
     clockTimer = setInterval(tick, 1000);
@@ -657,32 +627,31 @@ main{
     var img = byId(id);
     if (!img) return;
     img.alt = name || 'Team logo';
-    img.onerror = function () {
-      img.style.visibility = 'hidden';
-    };
-    if (src) {
-      img.style.visibility = 'visible';
-      img.src = src;
-    } else {
-      img.style.visibility = 'hidden';
-      img.removeAttribute('src');
-    }
+    img.onerror = function () { img.style.visibility = 'hidden'; };
+    if (src) { img.style.visibility = 'visible'; img.src = src; }
+    else { img.style.visibility = 'hidden'; img.removeAttribute('src'); }
   }
 
   function renderHeaderMatchup(teamA, teamB) {
     if (!headerMatchup) return;
     headerMatchup.replaceChildren();
     if (!teamA || !teamB) return;
-    var a = document.createElement('span');
-    a.className = 'm-team';
-    a.textContent = teamA;
-    var vs = document.createElement('span');
-    vs.className = 'm-vs';
-    vs.textContent = 'VS';
-    var b = document.createElement('span');
-    b.className = 'm-team';
-    b.textContent = teamB;
+    var a = document.createElement('span'); a.className = 'm-team'; a.textContent = teamA;
+    var vs = document.createElement('span'); vs.className = 'm-vs'; vs.textContent = 'VS';
+    var b = document.createElement('span'); b.className = 'm-team'; b.textContent = teamB;
     headerMatchup.append(a, vs, b);
+  }
+
+  function detectMime(url) {
+    var u = String(url || '').toLowerCase();
+    if (/\.m3u8(?:[?#]|$)/.test(u)) return 'application/x-mpegURL';
+    if (/\.mpd(?:[?#]|$)/.test(u)) return 'application/dash+xml';
+    return null;
+  }
+
+  function getOrigin(url) {
+    try { return new URL(url, window.location.href).origin; }
+    catch (e) { return ''; }
   }
 
   function parseStream(source, index) {
@@ -690,7 +659,8 @@ main{
     var item = (typeof source === 'string') ? { url: source } : source;
 
     var raw = item.url || item.link || item.src || item.streamUrl || item.stream ||
-              item.mpd || item.mpdUrl || item.file || item.manifest || item.playbackUrl || '';
+              item.mpd || item.mpdUrl || item.m3u8 || item.hls || item.file ||
+              item.manifest || item.playbackUrl || '';
     var url = String(raw || '').trim();
     if (!url) return null;
 
@@ -706,11 +676,7 @@ main{
     }
 
     if (!keys && typeof item.keys === 'string') keys = item.keys.trim();
-
-    if (!keys && typeof item.key === 'string' && item.key.indexOf(':') !== -1) {
-      keys = item.key.trim();
-    }
-
+    if (!keys && typeof item.key === 'string' && item.key.indexOf(':') !== -1) keys = item.key.trim();
     if (!keys && item.keyId && (item.key || item.kid)) {
       keys = String(item.keyId) + ':' + String(item.key || item.kid);
     }
@@ -719,27 +685,46 @@ main{
     var key = '';
     if (keys) {
       var parts = keys.split(':');
-      if (parts.length >= 2) {
-        keyId = normalizeHex(parts[0]);
-        key = normalizeHex(parts[1]);
-      }
+      if (parts.length >= 2) { keyId = normalizeHex(parts[0]); key = normalizeHex(parts[1]); }
     }
 
-    var typeLabel = (typeof item.type === 'string' && item.type)
-      ? item.type.toUpperCase()
-      : (keyId ? 'DRM' : 'DASH');
+    var headers = {};
+    var hasHeaders = false;
+    if (item.headers && typeof item.headers === 'object') {
+      Object.keys(item.headers).forEach(function (k) {
+        headers[k] = item.headers[k];
+        hasHeaders = true;
+      });
+    }
+    if (item.referer) { headers['Referer'] = item.referer; hasHeaders = true; }
+    if (item.referrer) { headers['Referer'] = item.referrer; hasHeaders = true; }
+    if (item.userAgent) { headers['User-Agent'] = item.userAgent; hasHeaders = true; }
+    if (item.useragent) { headers['User-Agent'] = item.useragent; hasHeaders = true; }
+
+    var typeLabel = (typeof item.type === 'string' && item.type) ? item.type.toUpperCase() : '';
+    if (!typeLabel) {
+      var mime = detectMime(url);
+      if (mime === 'application/x-mpegURL') typeLabel = 'HLS';
+      else if (mime === 'application/dash+xml') typeLabel = 'DASH';
+      else if (keyId) typeLabel = 'DRM';
+      else typeLabel = 'STREAM';
+    }
 
     return {
       title: item.title || item.name || item.label || ('Stream ' + (index + 1)),
       type: typeLabel,
       url: url,
       keyId: keyId,
-      key: key
+      key: key,
+      headers: hasHeaders ? headers : null
     };
   }
 
   function collectSources(event) {
     var groups = [event.dashStreams, event.streams, event.sources, event.links];
+    if (event.event) {
+      groups.push(event.event.dashStreams, event.event.streams, event.event.sources, event.event.links);
+    }
     var list = [];
     groups.forEach(function (group) {
       if (!Array.isArray(group)) return;
@@ -748,6 +733,18 @@ main{
         if (info) list.push(info);
       });
     });
+    if (!list.length) {
+      var single = event.stream || event.url || event.link || event.mpd || event.m3u8 ||
+                   event.streamUrl || event.playbackUrl;
+      if (!single && event.event) {
+        single = event.event.stream || event.event.url || event.event.link ||
+                 event.event.mpd || event.event.m3u8 || event.event.streamUrl;
+      }
+      if (single) {
+        var info = parseStream(single, 0);
+        if (info) list.push(info);
+      }
+    }
     return list;
   }
 
@@ -770,51 +767,66 @@ main{
         }
         player = new shaka.Player();
         player.addEventListener('error', onPlayerError);
+        try {
+          var net = player.getNetworkingEngine();
+          if (net) {
+            net.registerRequestFilter(function (type, request) {
+              if (!activeHeaders || !activeOrigin) return;
+              var uri = (request.uris && request.uris[0]) || '';
+              if (uri.indexOf(activeOrigin) !== 0) return;
+              Object.keys(activeHeaders).forEach(function (k) {
+                request.headers[k] = activeHeaders[k];
+              });
+            });
+          }
+        } catch (e) {}
         return player.attach(video);
       })
       .then(function () {
-        overlay = new shaka.ui.Overlay(player, shell, video);
-        overlay.configure({
-          controlPanelElements: [
-            'play_pause',
-            'mute',
-            'volume',
-            'time_and_duration',
-            'spacer',
-            'quality',
-            'picture_in_picture',
-            'fullscreen',
-            'overflow_menu'
-          ],
-          seekBarColors: {
-            base: '#828282',
-            buffered: '#ffc336',
-            played: '#1fc7ff'
-          }
-        });
+        try {
+          overlay = new shaka.ui.Overlay(player, shell, video);
+          overlay.configure({
+            controlPanelElements: [
+              'play_pause',
+              'mute',
+              'volume',
+              'time_and_duration',
+              'spacer',
+              'quality',
+              'picture_in_picture',
+              'fullscreen',
+              'overflow_menu'
+            ],
+            seekBarColors: {
+              base: '#828282',
+              buffered: '#ffc336',
+              played: '#1fc7ff'
+            }
+          });
+        } catch (e) {
+          video.controls = true;
+        }
         return player;
       });
-    playerPromise.catch(function () {
-      playerPromise = null;
-    });
+    playerPromise.catch(function () { playerPromise = null; });
     return playerPromise;
   }
 
-  function playSource(info) {
+  function playSource(info, button) {
     if (!info || !info.url) return Promise.resolve();
     var token = ++loadToken;
     setLoader(true);
     sourceNote.textContent = '';
+    activeHeaders = info.headers || null;
+    activeOrigin = getOrigin(info.url);
+
     return ensurePlayer()
       .then(function () {
         if (token !== loadToken) return null;
         var clearKeys = {};
         if (info.keyId && info.key) clearKeys[info.keyId] = info.key;
         player.configure({
-          drm: {
-            clearKeys: clearKeys,
-            servers: {}
-          },
+          drm: { clearKeys: clearKeys, servers: {} },
           manifest: {
             defaultPresentationDelay: 4,
             ignoreTextStreamFailures: true,
@@ -845,11 +857,17 @@ main{
             switchInterval: 4
           }
         });
+        var mime = detectMime(info.url);
+        if (mime) return player.load(info.url, null, mime);
         return player.load(info.url);
       })
       .then(function (result) {
         if (result === null || token !== loadToken) return;
         setLoader(false);
+        if (button) {
+          var state = button.querySelector('.channel-state');
+          if (state) state.textContent = 'PLAYING';
+        }
         var attempt = video.play();
         if (attempt && attempt.catch) attempt.catch(function () {});
       })
@@ -857,6 +875,10 @@ main{
         if (token !== loadToken) return;
         setLoader(false);
         if (error && error.code === 7000) return;
+        if (button) {
+          var state = button.querySelector('.channel-state');
+          if (state) state.textContent = 'FAILED';
+        }
         sourceNote.textContent = 'Unable to play this source: ' +
           ((error && error.message) || 'unknown error') + '.';
       });
@@ -871,8 +893,8 @@ main{
     });
     button.classList.add('active');
     var state = button.querySelector('.channel-state');
-    if (state) state.textContent = 'PLAYING';
-    playSource(list[index]);
+    if (state) state.textContent = 'LOADING';
+    playSource(list[index], button);
   }
 
   function renderChannels(list) {
@@ -883,6 +905,7 @@ main{
       return;
     }
     sourceNote.textContent = '';
+    var buttons = [];
     list.forEach(function (info, index) {
       var button = document.createElement('button');
       button.type = 'button';
@@ -910,17 +933,13 @@ main{
       copy.append(name, kind);
       button.append(badge, copy, state);
       channelGrid.append(button);
+      buttons.push(button);
 
       button.addEventListener('click', function () {
         activateChannel(button, list, index);
       });
-
-      if (index === 0) {
-        button.classList.add('active');
-        state.textContent = 'ACTIVE';
-      }
     });
-    playSource(list[0]);
+    if (buttons.length) activateChannel(buttons[0], list, 0);
   }
 
   function renderEvent(item) {
@@ -939,16 +958,13 @@ main{
     renderHeaderMatchup(teamA, teamB);
     startClock(match.startTimeIST);
 
-    document.title = title + ' · Live Player';
+    document.title = title;
 
     renderChannels(collectSources(item));
   }
 
   function showError(title, message) {
-    if (clockTimer) {
-      clearInterval(clockTimer);
-      clockTimer = null;
-    }
+    if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
     setText('matchTitle', title);
     setText('teamA', '');
     setText('teamB', '');
@@ -966,7 +982,7 @@ main{
     }
   }
 
-  function loadEvent() {
+  function fetchEvents() {
     return fetch(API_URL, { cache: 'no-store' })
       .then(function (response) {
         if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -974,24 +990,42 @@ main{
       })
       .then(function (data) {
         if (!data || !Array.isArray(data.events)) throw new Error('Invalid API response');
+        return data.events;
+      });
+  }
+
+  function loadEventById(id) {
+    return fetchEvents()
+      .then(function (events) {
         var selected = null;
-        for (var i = 0; i < data.events.length; i++) {
-          if (String(data.events[i] && data.events[i].id) === requestedId) {
-            selected = data.events[i];
-            break;
-          }
+        for (var i = 0; i < events.length; i++) {
+          if (String(events[i] && events[i].id) === id) { selected = events[i]; break; }
         }
         if (!selected) {
-          showError('Event ' + requestedId + ' not found',
+          showError('Event ' + id + ' not found',
             'No match data was returned for this event ID.');
           return;
         }
-        var match = selected.event;
-        if (!match || !match.teamA || !match.teamB || !match.startTimeIST) {
-          showError('Event ' + requestedId + ' has incomplete data',
-            'Required match details are missing from the API response.');
+        renderEvent(selected);
+      })
+      .catch(function () {
+        showError('Unable to load event data',
+          'The API request failed. Check the API response or its CORS settings.');
+      });
+  }
+
+  function loadFirstEvent() {
+    return fetchEvents()
+      .then(function (events) {
+        if (!events.length) {
+          showError('No events available', 'The API returned no events to play.');
           return;
         }
+        var selected = null;
+        for (var i = 0; i < events.length; i++) {
+          if (collectSources(events[i]).length) { selected = events[i]; break; }
+        }
+        if (!selected) selected = events[0];
         renderEvent(selected);
       })
       .catch(function () {
@@ -1003,15 +1037,11 @@ main{
   function initPopup() {
     var popup = byId('waOverlay');
     if (!popup) return;
-    setTimeout(function () {
-      popup.classList.add('show');
-    }, 2000);
+    setTimeout(function () { popup.classList.add('show'); }, 2000);
     var already = byId('btnAlready');
     var join = byId('btnJoin');
     if (already) {
-      already.addEventListener('click', function () {
-        popup.classList.remove('show');
-      });
+      already.addEventListener('click', function () { popup.classList.remove('show'); });
     }
     if (join) {
       join.addEventListener('click', function () {
@@ -1052,7 +1082,7 @@ main{
     }
 
     if (!requestedId) {
-      showError('Missing id parameter', 'Add a valid event ID, for example: ?id=3934.');
+      loadFirstEvent();
       return;
     }
 
@@ -1061,7 +1091,7 @@ main{
       return;
     }
 
-    loadEvent();
+    loadEventById(requestedId);
   }
 
   if (document.readyState === 'loading') {
