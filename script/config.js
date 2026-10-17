@@ -106,3 +106,22 @@ if (typeof CNPTV_CONF !== "undefined" && CNPTV_CONF) {
     }
   ];
 }
+
+if(typeof CNPTV_CONF!=='undefined'&&CNPTV_CONF){
+  CNPTV_CONF.heroMatches = [
+    {
+      "tournament": "WEST INDIES TOUR OF INDIA - 3RD T20I",
+      "homeTeam": {
+        "name": "India",
+        "logo": "https://flagpedia.net/data/flags/w1160/in.webp"
+      },
+      "awayTeam": {
+        "name": "West Indies",
+        "logo": "https://upload.wikimedia.org/wikipedia/de/f/f8/West_Indies_Cricket_Board_Logo.svg?utm_source=de.wikipedia.org&utm_campaign=index&utm_content=original"
+      },
+      "poster": "https://img10.hotstar.com/image/upload/f_auto,q_90,w_1920/sources/r1/cms/prod/9280/1791259109280-i",
+      "date": "17 OCT 2026, 07:00 PM",
+      "watchUrl": "/home/live/ind-vs-wi.html"
+    }
+  ];
+}
