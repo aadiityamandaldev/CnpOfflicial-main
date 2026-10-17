@@ -1,7 +1,7 @@
 var CNPTV_CONF = {
   siteName: "CnpTV",
 
-  build: "22",
+  build: "23",
   heroSlideDuration: 10000,
   maxHeroMatches: 8,
   heroFeedUrl: "",
@@ -23,6 +23,24 @@ var CNPTV_CONF = {
     sony:                "https://raw.githubusercontent.com/kajju027/SonyLiv-Events-Json/refs/heads/main/sonyliv.json"
   },
 
+  sections: {
+    football:    { link: "/watch/?src=football", idMode: "param", idKey: "id", viewAllLink: "/events/?sport=football" },
+    cricket:     { link: "/watch/?src=cricket",  idMode: "param", idKey: "id", viewAllLink: "/events/?sport=cricket"  },
+    willow:      { link: "/az/",                 idMode: "param", idKey: "id", viewAllLink: "/events/?sport=willow"   },
+    fancode:     { link: "/fc/play/",            idMode: "param", idKey: "id", viewAllLink: "/events/?sport=fancode"  },
+    worldSports: { link: "",                     idMode: "param", idKey: "id", viewAllLink: "/events/?sport=world-sports" },
+    sonyLiv:     { link: "/player/sony",         idMode: "param", idKey: "id", viewAllLink: "/events/?sport=sony-liv" }
+  },
+
+  cardLimit: 10,
+  upcomingClickable: false,
+
+  labels: {
+    watchNow:   "Watch Now",
+    comingSoon: "Coming Soon",
+    viewAll:    "View All Events"
+  },
+
   playerBase: "",
 
   routes: {
@@ -39,15 +57,32 @@ var CNPTV_CONF = {
 window.CNPTV_CONFIG      = CNPTV_CONF;
 window.MATCHDEKHO_CONFIG = CNPTV_CONF;
 
-/* ── Hero Slider Matches ────────────────────────────────────────────────────
-   FIX: Previously there were TWO separate if-blocks both assigning
-   CNPTV_CONF.heroMatches. The second block immediately overwrote the first,
-   leaving only ONE match. With a single match the slider arrows and progress
-   bar are hidden and autoplay is disabled.
+window.CnpTVHelper = (function () {
+  function buildUrl(sectionCfg, eventId) {
+    var base = String(sectionCfg && sectionCfg.link || "");
+    if (!base) return "";
+    if (!eventId) return base;
+    var mode = String(sectionCfg.idMode || "param");
+    var key  = String(sectionCfg.idKey  || "id");
+    if (mode === "path") {
+      return base.replace(/\/$/, "") + "/" + encodeURIComponent(eventId);
+    }
+    var sep = base.indexOf("?") > -1 ? "&" : "?";
+    return base + sep + encodeURIComponent(key) + "=" + encodeURIComponent(eventId);
+  }
 
-   Rule going forward: update THIS single block only. Never add a second
-   block below — it will silently overwrite whatever is here.
-────────────────────────────────────────────────────────────────────────────── */
+  function extractId(item) {
+    if (!item || typeof item !== "object") return "";
+    return String(item.id || item.matchId || item.match_id || item.matchID || item.stream_id || "");
+  }
+
+  function toTitleCase(str) {
+    return String(str || "").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+  }
+
+  return { buildUrl: buildUrl, extractId: extractId, toTitleCase: toTitleCase };
+})();
+
 if (typeof CNPTV_CONF !== "undefined" && CNPTV_CONF) {
   CNPTV_CONF.heroMatches = [
     {
