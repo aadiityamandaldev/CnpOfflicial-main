@@ -26,8 +26,8 @@ var CNPTV_CONF = {
   sections: {
     football:    { link: "/watch/football/",   idMode: "param", idKey: "id", viewAllLink: "/watch/football/"  },
     cricket:     { link: "/watch/cricket/",    idMode: "param", idKey: "id", viewAllLink: "/watch/cricket/"   },
-    willow:      { link: "/watch/willow/",     idMode: "param", idKey: "id", viewAllLink: "/watch/willow/"    },
-    fancode:     { link: "/watch/fancode/pz/", idMode: "param", idKey: "id", viewAllLink: "/watch/fancode/"   },
+    willow:      { link: "/watch/willow/",     idMode: "param", idKey: "", viewAllLink: "/watch/willow/"    },
+    fancode:     { link: "/watch/fancode/pz/", idMode: "param", idKey: "", viewAllLink: "/watch/fancode/"   },
     worldSports: { link: "/watch/wwsports/",   idMode: "param", idKey: "id", viewAllLink: "/watch/wwsports/"  },
     sonyLiv:     { link: "/watch/sliv/",       idMode: "param", idKey: "id", viewAllLink: "/watch/sliv/"      }
   },
