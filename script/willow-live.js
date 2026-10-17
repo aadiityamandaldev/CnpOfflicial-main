@@ -5,10 +5,8 @@
   var apis         = cfg.apis || {};
   var API_URL      = apis.willowLive || apis.willow || '';
   var ROUTES       = cfg.routes || {};
-  var PLAYER_ROUTE = ROUTES.willowPlayer || '/az/';
+  var PLAYER_ROUTE = ROUTES.willowPlayer || '/watch/willow/';
   var PLAYER_BASE  = cfg.playerBase || '';
-  var PLAYER_MODE  = cfg.willowPlayerMode === 'index' ? 'index' : 'stream';
-  var PRIMARY_KEY  = 'akamai_server1';
   var EAGER_CARDS  = 5;
 
   var track      = document.getElementById('willowLiveTrack');
@@ -96,22 +94,9 @@
     return '';
   }
 
-  function getStreamUrl(m) {
-    var cnp = m.CnpTV || m.cnptv || m.cnpTV || m.cnp_tv || m.servers || {};
-    if (!cnp || typeof cnp !== 'object' || Array.isArray(cnp)) return '';
-    if (cnp[PRIMARY_KEY]) return String(cnp[PRIMARY_KEY]);
-    var akamai = Object.keys(cnp).filter(function (k) { return /^akamai_server\d+$/i.test(k) && cnp[k]; })
-      .sort(function (a, b) { return a.localeCompare(b, undefined, { numeric: true }); });
-    if (akamai.length) return String(cnp[akamai[0]]);
-    var keys = Object.keys(cnp);
-    for (var i = 0; i < keys.length; i++) {
-      if (typeof cnp[keys[i]] === 'string' && cnp[keys[i]]) return cnp[keys[i]];
-    }
-    return '';
-  }
-
-  function buildPlayerUrl(matchId, streamUrl) {
-    var secCfg = ((cfg.sections || {}).willow) || {};
+  function buildPlayerUrl(matchId) {
+    var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var secCfg = ((cfgObj.sections || {}).willow) || {};
     var secLink = String(secCfg.link || '');
     var base;
     if (secLink) {
@@ -121,10 +106,9 @@
       var route = PLAYER_ROUTE.charAt(0) === '/' ? PLAYER_ROUTE : '/' + PLAYER_ROUTE;
       base = routeBase + route;
     }
-    if (PLAYER_MODE === 'index') {
-      return base + '?' + encodeURIComponent(matchId) + '&ser=1';
-    }
-    return base + '?id=' + encodeURIComponent(matchId) + '&ser=' + encodeURIComponent(streamUrl || '');
+    var id = String(matchId || '').trim();
+    if (!id) return base;
+    return base + '?id=' + encodeURIComponent(id);
   }
 
   function statusInfo(raw) {
@@ -185,13 +169,12 @@
   function renderMatches(matches) {
     var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
     var cardLimit = Number(cfgObj.cardLimit) || 10;
-    var upcomingClickable = cfgObj.upcomingClickable !== false;
     var labels = cfgObj.labels || {};
     var watchLabel = labels.watchNow || 'Watch Now';
     var comingSoonLabel = labels.comingSoon || 'Coming Soon';
     var viewAllLabel = labels.viewAll || 'View All Events';
     var secCfg = (cfgObj.sections || {}).willow || {};
-    var viewAllLink = secCfg.viewAllLink || '/events/?sport=willow';
+    var viewAllLink = secCfg.viewAllLink || '/watch/willow/';
 
     updateSectionStatus(matches);
 
@@ -207,7 +190,6 @@
       var m = visible[i];
       var status     = statusInfo(pick(m, ['status', 'matchStatus', 'state', 'status_display']));
       var id         = String(pick(m, ['id', 'matchId', 'match_id', 'matchID', 'stream_id']));
-      var streamUrl  = getStreamUrl(m);
       var rawTitle   = buildTitle(m);
       var matchup    = parseMatchup(rawTitle);
       var tournament = escapeHtml(tournamentOf(m, rawTitle));
@@ -217,14 +199,13 @@
 
       var isUpcoming = status.className === 'upcoming';
       var watchHtml = '';
-      if (id) {
-        if (isUpcoming) {
-          watchHtml = '<div class="md-actions"><span class="md-watch-btn md-coming-soon">' + escapeHtml(comingSoonLabel) + '</span></div>';
-        } else {
-          var href = escapeHtml(buildPlayerUrl(id, streamUrl));
-          watchHtml = '<div class="md-actions"><a class="md-watch-btn" href="' + href + '" aria-label="Watch ' + imgAlt + '">' +
-            '<span class="md-watch-btn-icon" aria-hidden="true">&#9654;</span>' + escapeHtml(watchLabel) + '</a></div>';
-        }
+
+      if (isUpcoming) {
+        watchHtml = '<div class="md-actions"><a class="md-watch-btn md-coming-soon" href="' + escapeHtml(viewAllLink) + '">' + escapeHtml(comingSoonLabel) + '</a></div>';
+      } else if (id) {
+        var href = escapeHtml(buildPlayerUrl(id));
+        watchHtml = '<div class="md-actions"><a class="md-watch-btn" href="' + href + '" aria-label="Watch ' + imgAlt + '">' +
+          '<span class="md-watch-btn-icon" aria-hidden="true">&#9654;</span>' + escapeHtml(watchLabel) + '</a></div>';
       }
 
       var matchupHtml = '';
