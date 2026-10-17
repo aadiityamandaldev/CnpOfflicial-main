@@ -16,18 +16,14 @@
 
   function escapeHtml(value) {
     return String(value == null ? "" : value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
 
   function cleanTitle(value) {
     return String(value == null ? "" : value)
       .replace(/^\s*(upcoming|live|ended|finished)\s*[-:]\s*/i, "")
-      .replace(/\s+/g, " ")
-      .trim();
+      .replace(/\s+/g, " ").trim();
   }
 
   function isLive(status) {
@@ -38,9 +34,7 @@
     var label = String(raw == null ? "UPCOMING" : raw).trim();
     if (isLive(label)) return { label: "LIVE", className: "live" };
     var upper = label.toUpperCase();
-    if (upper === "ENDED" || upper === "FINISHED" || upper === "COMPLETED") {
-      return { label: "ENDED", className: "ended" };
-    }
+    if (upper === "ENDED" || upper === "FINISHED" || upper === "COMPLETED") return { label: "ENDED", className: "ended" };
     if (!label) return { label: "UPCOMING", className: "upcoming" };
     return { label: upper, className: "upcoming" };
   }
@@ -50,6 +44,15 @@
   }
 
   function playerUrl(id) {
+    var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var secCfg = (cfgObj.sections || {}).sonyLiv || {};
+    var secLink = String(secCfg.link || "");
+
+    if (secLink) {
+      var helper = window.CnpTVHelper;
+      return helper && id ? helper.buildUrl(secCfg, String(id)) : secLink;
+    }
+
     var route = String(PLAYER_ROUTE || "/player/sony");
     if (route.charAt(0) !== "/" && route.indexOf("://") === -1) route = "/" + route;
     var base = String(PLAYER_BASE || "").replace(/\/+$/, "");
@@ -66,6 +69,29 @@
     return [];
   }
 
+  function updateSectionStatus(allMatches) {
+    var el = document.getElementById("sonyLivStatus");
+    if (!el) return;
+    var live = 0, upcoming = 0;
+    for (var i = 0; i < allMatches.length; i++) {
+      var cls = statusInfo(allMatches[i] && allMatches[i].status).className;
+      if (cls === "live") live++;
+      else if (cls === "upcoming") upcoming++;
+    }
+    var text;
+    if (live) text = live + (live === 1 ? " Event Live" : " Events Live");
+    else if (upcoming) text = upcoming + (upcoming === 1 ? " Upcoming Event" : " Upcoming Events");
+    else text = "No Events Live";
+    el.textContent = text;
+  }
+
+  function mdViewAllCard(link, label) {
+    return '<a class="md-card md-view-all-card" href="' + escapeHtml(link) + '" aria-label="' + escapeHtml(label) + '">' +
+      '<span class="view-all-plus" aria-hidden="true">+</span>' +
+      '<span class="view-all-label">' + escapeHtml(label) + '</span>' +
+      '</a>';
+  }
+
   var FALLBACK = "data:image/svg+xml," + encodeURIComponent(
     "<svg xmlns='http://www.w3.org/2000/svg' width='960' height='540' viewBox='0 0 960 540'>" +
     "<defs><linearGradient id='g' x1='0' x2='1' y1='1' y2='0'>" +
@@ -76,8 +102,7 @@
 
   function renderSkeletons(count) {
     var html = "";
-    var i;
-    for (i = 0; i < count; i++) {
+    for (var i = 0; i < count; i++) {
       html += "<div class=\"md-skeleton\" aria-hidden=\"true\">" +
         "<div class=\"md-skeleton-thumb\"></div>" +
         "<div class=\"md-skeleton-info\">" +
@@ -90,15 +115,29 @@
   }
 
   function renderMatches(matches) {
+    var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var cardLimit = Number(cfgObj.cardLimit) || 10;
+    var upcomingClickable = cfgObj.upcomingClickable !== false;
+    var labels = cfgObj.labels || {};
+    var watchLabel = labels.watchNow || "Watch Now";
+    var comingSoonLabel = labels.comingSoon || "Coming Soon";
+    var viewAllLabel = labels.viewAll || "View All Events";
+    var secCfg = (cfgObj.sections || {}).sonyLiv || {};
+    var viewAllLink = secCfg.viewAllLink || "/events/?sport=sony-liv";
+
+    updateSectionStatus(matches);
+
     if (!matches || !matches.length) {
       track.innerHTML = "<div class=\"md-empty\"><strong>No Sony Liv events right now</strong>Check back soon.</div>";
       return;
     }
 
+    var visible = matches.slice(0, cardLimit);
     var html = "";
-    matches.forEach(function (match, index) {
+
+    for (var index = 0; index < visible.length; index++) {
+      var match = visible[index];
       var id = match.match_id || match.id || match.event_id || "";
-      var href = id === "" ? "" : playerUrl(id);
       var status = statusInfo(match.status);
       var eventName = cleanTitle(match.event_name || match.title || "Sony Liv");
       var matchName = cleanTitle(match.match_name || "");
@@ -108,17 +147,23 @@
       var language = String(match.language || "").trim();
       var meta = [channel, language].filter(Boolean).join("  ·  ");
       var poster = match.poster || match.thumbnail || FALLBACK;
-      var safeHref = escapeHtml(href);
       var safeTitle = escapeHtml(title);
       var safePoster = escapeHtml(poster);
-      var watch = "";
 
-      if (href) {
+      var isUpcoming = status.className === "upcoming";
+      var href = id ? playerUrl(id) : "";
+      var safeHref = escapeHtml(href);
+      var canClick = href && (!isUpcoming || upcomingClickable);
+
+      var watch = "";
+      if (isUpcoming) {
+        watch = "<span class=\"md-watch-btn md-coming-soon\">" + escapeHtml(comingSoonLabel) + "</span>";
+      } else if (href) {
         watch = "<span class=\"md-watch-btn\" aria-hidden=\"true\">" +
-          "<span class=\"md-watch-btn-icon\">&#9654;</span>WATCH NOW</span>";
+          "<span class=\"md-watch-btn-icon\">&#9654;</span>" + escapeHtml(watchLabel) + "</span>";
       }
 
-      html += (href ? "<a class=\"md-card md-" + status.className + "\" href=\"" + safeHref + "\"" : "<article class=\"md-card md-" + status.className + "\"") +
+      html += (canClick ? "<a class=\"md-card md-" + status.className + "\" href=\"" + safeHref + "\"" : "<article class=\"md-card md-" + status.className + "\"") +
         " aria-label=\"" + safeTitle + "\">" +
         "<div class=\"md-thumb\">" +
         "<img src=\"" + safePoster + "\" alt=\"" + safeTitle + "\" " +
@@ -132,9 +177,10 @@
         "<div class=\"md-footer\">" +
         (meta ? "<span class=\"md-time\">" + escapeHtml(meta) + "</span>" : "<span class=\"md-time\"></span>") +
         (watch ? "<div class=\"md-actions\">" + watch + "</div>" : "") +
-        "</div></div>" + (href ? "</a>" : "</article>");
-    });
+        "</div></div>" + (canClick ? "</a>" : "</article>");
+    }
 
+    html += mdViewAllCard(viewAllLink, viewAllLabel);
     track.innerHTML = html;
   }
 
@@ -148,7 +194,6 @@
       var options = { cache: "no-store" };
       var settled = false;
       var timeout;
-
       if (controller) options.signal = controller.signal;
       function finish(error, payload) {
         if (settled) return;
@@ -156,12 +201,10 @@
         window.clearTimeout(timeout);
         if (error) reject(error); else resolve(payload);
       }
-
       timeout = window.setTimeout(function () {
         if (controller) controller.abort();
         finish(new Error("Request timed out"));
       }, 12000);
-
       fetch(stamp(url), options)
         .then(function (res) {
           if (!res.ok) throw new Error("HTTP " + res.status);
@@ -219,7 +262,6 @@
     }, 60000);
   }
 
-  // Fetch immediately. Some mobile/desktop-mode browsers do not reliably fire the old observer.
   load();
 
   window.addEventListener("beforeunload", function () {
