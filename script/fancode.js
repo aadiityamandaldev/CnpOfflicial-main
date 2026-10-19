@@ -151,8 +151,11 @@
     }
     var bid = baseId(matchId);
     if (!bid) return String(secCfg.viewAllLink || '/watch/fancode/');
+
     var lc = String(languageCode || 'en').toLowerCase();
-    return base + '?' + bid + '_' + lc;
+    var separator = base.indexOf('?') === -1 ? '?' : '&';
+
+    return base + separator + 'id=' + encodeURIComponent(bid + '_' + lc);
   }
 
   function buildTitle(m) {
