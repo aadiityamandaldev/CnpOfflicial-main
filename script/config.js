@@ -110,20 +110,6 @@ if (typeof CNPTV_CONF !== "undefined" && CNPTV_CONF) {
 if(typeof CNPTV_CONF!=='undefined'&&CNPTV_CONF){
   CNPTV_CONF.heroMatches = [
     {
-      "tournament": "INDIA TOUR OF NEW ZEALAND 2026 - 1ST T20I",
-      "homeTeam": {
-        "name": "India",
-        "logo": "https://flagpedia.net/data/flags/w1160/in.webp"
-      },
-      "awayTeam": {
-        "name": "New Zealand",
-        "logo": "https://flagpedia.net/data/flags/w1160/nz.webp"
-      },
-      "poster": "https://ik.imagekit.io/sayanmete/India%20vs%20New%20Zealand%20T20%20match%20poster%20by%20Sayan",
-      "date": "22 OCT 2026 - 12:10 PM",
-      "watchUrl": "/home/live/ind-vs-nz.html"
-    },
-    {
       "tournament": "ZIMBABWE TOUE OF INDIA 2026",
       "homeTeam": {
         "name": "India",
@@ -136,6 +122,20 @@ if(typeof CNPTV_CONF!=='undefined'&&CNPTV_CONF){
       "poster": "https://img10.hotstar.com/image/upload/f_auto,q_90/sources/r1/cms/prod/1415/1792085641415-i",
       "date": "23 OCT 2026, 02 : 00 PM",
       "watchUrl": "/home/live/ind-vs-zim.html"
+    },
+    {
+      "tournament": "INDIA TOUR OF NEW ZEALAND 2026 - 1ST T20I",
+      "homeTeam": {
+        "name": "India",
+        "logo": "https://flagpedia.net/data/flags/w1160/in.webp"
+      },
+      "awayTeam": {
+        "name": "New Zealand",
+        "logo": "https://flagpedia.net/data/flags/w1160/nz.webp"
+      },
+      "poster": "https://ik.imagekit.io/sayanmete/India%20vs%20New%20Zealand%20T20%20match%20poster%20by%20Sayan",
+      "date": "22 OCT 2026 - 12:10 PM",
+      "watchUrl": "/home/live/ind-vs-nz.html"
     }
   ];
 }
