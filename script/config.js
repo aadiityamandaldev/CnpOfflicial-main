@@ -120,7 +120,7 @@ if(typeof CNPTV_CONF!=='undefined'&&CNPTV_CONF){
         "logo": "https://flagpedia.net/data/flags/w1160/nz.webp"
       },
       "poster": "https://ik.imagekit.io/sayanmete/India%20vs%20New%20Zealand%20T20%20match%20poster%20by%20Sayan",
-      "date": "22 OCT 2026 - 12:10 PM",
+      "date": "24 OCT 2026 - 11:45 Am",
       "watchUrl": "/home/live/ind-vs-nz.html"
     },
     {
