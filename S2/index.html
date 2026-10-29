@@ -2,8 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; frame-src https:">
-<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>Cricket News Point (CNP) – Free HD Live Cricket Streaming</title>
 <meta name="description" content="Watch free HD live cricket streaming on Cricket News Point. IPL, T20 World Cup, FIFA World Cup and live scores.">
@@ -118,10 +116,10 @@ body{
 
 .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);display:flex;padding:12px;z-index:99999;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .popup-box{
-  width:100%;max-width:310px;margin:auto;
+  width:100%;max-width:340px;margin:auto;
   background:#1C1D22;
   border:2px solid #00BFFF;
-  border-radius:24px;padding:26px 18px 18px;text-align:center;
+  border-radius:24px;padding:29px 20px 20px;text-align:center;
   box-shadow:
     0 0 12px rgba(0,191,255,.34),
     0 0 32px rgba(0,191,255,.14),
@@ -135,12 +133,12 @@ body{
   60%{opacity:1;transform:scale(1.03) translateY(-4px)}
   100%{opacity:1;transform:scale(1) translateY(0)}
 }
-.popup-title{color:#ffcc00;font-family:'Acme',sans-serif;font-size:clamp(20px,6vw,25px);margin-bottom:8px}
-.popup-text{color:#a0a0a8;font-size:clamp(12px,3.6vw,13.5px);line-height:1.55;margin-bottom:18px}
-.popup-text b{color:#fff;font-family:'Amaranth',sans-serif;font-size:clamp(14px,4.4vw,16px);display:block;margin-top:5px}
-.btn-popup{width:100%;padding:12px;border:none;border-radius:12px;font-family:'Amaranth',sans-serif;cursor:pointer;-webkit-appearance:none;appearance:none;touch-action:manipulation;transition:transform .18s}
+.popup-title{color:#ffcc00;font-family:'Acme',sans-serif;font-size:clamp(21px,6.4vw,27px);margin-bottom:9px}
+.popup-text{color:#a0a0a8;font-size:clamp(12.5px,3.8vw,14px);line-height:1.58;margin-bottom:20px}
+.popup-text b{color:#fff;font-family:'Amaranth',sans-serif;font-size:clamp(15px,4.6vw,17px);display:block;margin-top:6px}
+.btn-popup{width:100%;padding:13px;border:none;border-radius:12px;font-family:'Amaranth',sans-serif;cursor:pointer;-webkit-appearance:none;appearance:none;touch-action:manipulation;transition:transform .18s}
 .btn-popup:active{transform:scale(.95)}
-.btn-join-main{font-size:clamp(15px,4.6vw,17px);font-weight:700;margin-bottom:6px;display:block}
+.btn-join-main{font-size:clamp(16px,4.8vw,18px);font-weight:700;margin-bottom:7px;display:block}
 .btn-joined-main{background:transparent;color:#484850;font-size:12px;padding:7px 14px;width:auto;margin:0 auto;display:block}
 
 .site-footer{text-align:center;padding:10px 10px 4px;display:flex;flex-direction:column;align-items:center;animation:fadeUp .5s ease .2s both}
@@ -151,7 +149,7 @@ body{
 
 @media(max-width:360px){
   .header{font-size:18px}
-  .popup-box{padding:22px 14px 14px}
+  .popup-box{padding:24px 16px 16px}
   .action-button{padding:13px;font-size:13px}
   .info-card{padding:15px 16px}
 }
@@ -159,7 +157,6 @@ body{
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
-@media (prefers-reduced-motion:reduce){body,.container{animation:none}}
 </style>
 </head>
 <body>
@@ -190,7 +187,7 @@ body{
   </div>
 
   <div class="video-wrapper" id="videoWrapper">
-    <iframe id="videoFrame" title="Live stream player" allowfullscreen allow="autoplay;encrypted-media;picture-in-picture;fullscreen" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" referrerpolicy="strict-origin-when-cross-origin" scrolling="no" frameborder="0" loading="eager"></iframe>
+    <iframe id="videoFrame" allowfullscreen allow="autoplay;encrypted-media;picture-in-picture;fullscreen" referrerpolicy="no-referrer-when-downgrade" scrolling="no" frameborder="0" loading="eager"></iframe>
   </div>
   <div id="errorBox" class="error-box" role="alert">Stream Not Found</div>
 
@@ -232,6 +229,7 @@ body{
 var POPUP_JOIN_LINK = "https://t.me/CnP6x";
 var PAGE_JOIN_LINK = "https://t.me/CnP6x";
 var DATA_SOURCE_URL = "https://sonujson-v5.pages.dev/loura.json";
+var BELL_LINK = "https://budgetezy.org/4/420d97a4898f4ac72dbe933909150fbd";
 
 var JOIN_SCHEMES = [
   {bg:'linear-gradient(135deg,#43a047,#2e7d32)',color:'#fff'},
@@ -264,8 +262,6 @@ var popunderState = 'idle';
 var popunderRetryCount = 0;
 var popunderRetryTimer = null;
 var popunderRetryDelays = [500, 1500];
-var popunderTotalAttempts = 0;
-var POPUNDER_MAX_ATTEMPTS = 6;
 var initialPopupClosed = false;
 
 function isMobileDevice() {
@@ -279,8 +275,6 @@ function startPopunder() {
   if (!initialPopupClosed) return;
   if (popunderState === 'loading' || popunderState === 'ready') return;
   if (navigator.onLine === false) return;
-  if (popunderTotalAttempts >= POPUNDER_MAX_ATTEMPTS) return;
-  popunderTotalAttempts++;
   clearTimeout(popunderRetryTimer);
   popunderRetryTimer = null;
   popunderState = 'loading';
@@ -310,6 +304,20 @@ document.addEventListener('visibilitychange', function() {
   if (popunderState !== 'failed') return;
   popunderRetryCount = 0;
   startPopunder();
+}, false);
+
+window.addEventListener('pageshow', function(e) {
+  if (!e.persisted) return;
+  bellBusy = false;
+  var svg = document.getElementById('bellSvg');
+  if (svg) {
+    svg.classList.remove('ringing');
+    svg.classList.add('idle');
+  }
+  if (initialPopupClosed && popunderState !== 'loading' && popunderState !== 'ready') {
+    popunderRetryCount = 0;
+    startPopunder();
+  }
 }, false);
 
 window.addEventListener('online', function() {
@@ -379,15 +387,6 @@ function removeShimmer() {
   if (s && s.parentNode) s.parentNode.removeChild(s);
 }
 
-function safeStreamUrl(raw) {
-  try {
-    var u = new URL(String(raw).trim());
-    return u.protocol === 'https:' ? u.href : '';
-  } catch (e) {
-    return '';
-  }
-}
-
 function loadStream(targetId) {
   var frame = document.getElementById('videoFrame');
   var wrapper = document.getElementById('videoWrapper');
@@ -411,9 +410,8 @@ function loadStream(targetId) {
         return x && x.id !== undefined && String(x.id).trim().toLowerCase() === wanted;
       });
     }
-    var streamSrc = found ? safeStreamUrl(found.iframeSrc) : '';
-    if (found && streamSrc) {
-      var streamName = String(found.name || '').trim().slice(0, 120) || 'Live Stream';
+    if (found && found.iframeSrc) {
+      var streamName = String(found.name || '').trim() || 'Live Stream';
       frame.addEventListener('load', function onLoad() {
         frame.removeEventListener('load', onLoad);
         removeShimmer();
@@ -423,7 +421,7 @@ function loadStream(targetId) {
         removeShimmer();
       });
       setTimeout(removeShimmer, 12000);
-      frame.src = streamSrc;
+      frame.src = found.iframeSrc;
       if (titleEl) titleEl.innerText = streamName;
       document.title = streamName + ' \u2013 Cricket News Point';
     } else {
@@ -467,6 +465,19 @@ function resolveTargetId() {
   return id ? id.trim().slice(0, 100) : '';
 }
 
+var bellBusy = false;
+
+function openBellLink() {
+  if (bellBusy) return;
+  bellBusy = true;
+  setTimeout(function() { bellBusy = false; }, 3000);
+  if (isMobileDevice()) {
+    setTimeout(function() { window.location.href = BELL_LINK; }, 650);
+  } else {
+    window.open(BELL_LINK, '_blank', 'noopener,noreferrer');
+  }
+}
+
 function initBell() {
   var btn = document.getElementById('bellBtn');
   var svg = document.getElementById('bellSvg');
@@ -480,9 +491,13 @@ function initBell() {
       svg.classList.add('idle');
     }, 700);
   }
-  btn.addEventListener('click', ring);
+  function activate() {
+    ring();
+    openBellLink();
+  }
+  btn.addEventListener('click', activate);
   btn.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ring(); }
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
   });
 }
 
