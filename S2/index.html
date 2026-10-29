@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; frame-src https:">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>Cricket News Point (CNP) – Free HD Live Cricket Streaming</title>
 <meta name="description" content="Watch free HD live cricket streaming on Cricket News Point. IPL, T20 World Cup, FIFA World Cup and live scores.">
@@ -157,6 +159,7 @@ body{
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+@media (prefers-reduced-motion:reduce){body,.container{animation:none}}
 </style>
 </head>
 <body>
@@ -187,7 +190,7 @@ body{
   </div>
 
   <div class="video-wrapper" id="videoWrapper">
-    <iframe id="videoFrame" allowfullscreen allow="autoplay;encrypted-media;picture-in-picture;fullscreen" referrerpolicy="no-referrer-when-downgrade" scrolling="no" frameborder="0" loading="eager"></iframe>
+    <iframe id="videoFrame" title="Live stream player" allowfullscreen allow="autoplay;encrypted-media;picture-in-picture;fullscreen" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms" referrerpolicy="strict-origin-when-cross-origin" scrolling="no" frameborder="0" loading="eager"></iframe>
   </div>
   <div id="errorBox" class="error-box" role="alert">Stream Not Found</div>
 
@@ -261,6 +264,8 @@ var popunderState = 'idle';
 var popunderRetryCount = 0;
 var popunderRetryTimer = null;
 var popunderRetryDelays = [500, 1500];
+var popunderTotalAttempts = 0;
+var POPUNDER_MAX_ATTEMPTS = 6;
 var initialPopupClosed = false;
 
 function isMobileDevice() {
@@ -274,6 +279,8 @@ function startPopunder() {
   if (!initialPopupClosed) return;
   if (popunderState === 'loading' || popunderState === 'ready') return;
   if (navigator.onLine === false) return;
+  if (popunderTotalAttempts >= POPUNDER_MAX_ATTEMPTS) return;
+  popunderTotalAttempts++;
   clearTimeout(popunderRetryTimer);
   popunderRetryTimer = null;
   popunderState = 'loading';
@@ -372,6 +379,15 @@ function removeShimmer() {
   if (s && s.parentNode) s.parentNode.removeChild(s);
 }
 
+function safeStreamUrl(raw) {
+  try {
+    var u = new URL(String(raw).trim());
+    return u.protocol === 'https:' ? u.href : '';
+  } catch (e) {
+    return '';
+  }
+}
+
 function loadStream(targetId) {
   var frame = document.getElementById('videoFrame');
   var wrapper = document.getElementById('videoWrapper');
@@ -395,7 +411,9 @@ function loadStream(targetId) {
         return x && x.id !== undefined && String(x.id).trim().toLowerCase() === wanted;
       });
     }
-    if (found) {
+    var streamSrc = found ? safeStreamUrl(found.iframeSrc) : '';
+    if (found && streamSrc) {
+      var streamName = String(found.name || '').trim().slice(0, 120) || 'Live Stream';
       frame.addEventListener('load', function onLoad() {
         frame.removeEventListener('load', onLoad);
         removeShimmer();
@@ -405,9 +423,9 @@ function loadStream(targetId) {
         removeShimmer();
       });
       setTimeout(removeShimmer, 12000);
-      frame.src = found.iframeSrc;
-      if (titleEl) titleEl.innerText = found.name;
-      document.title = found.name + ' \u2013 Cricket News Point';
+      frame.src = streamSrc;
+      if (titleEl) titleEl.innerText = streamName;
+      document.title = streamName + ' \u2013 Cricket News Point';
     } else {
       removeShimmer();
       if (wrapper) wrapper.style.display = 'none';
@@ -417,23 +435,36 @@ function loadStream(targetId) {
   });
 }
 
-function resolveTargetId() {
-  var id = '';
-  try {
-    var params = new URLSearchParams(window.location.search);
-    params.forEach(function(value, key) {
-      if (!id && key.trim().toLowerCase() === 'id') id = value;
-    });
-    if (!id && window.location.hash) {
-      var hp = new URLSearchParams(window.location.hash.replace(/^#\??/, ''));
-      hp.forEach(function(value, key) {
-        if (!id && key.trim().toLowerCase() === 'id') id = value;
-      });
+var IGNORED_KEYS = /^(utm_[a-z]+|fbclid|gclid|ref|source|v|t|_gl|mc_cid|mc_eid)$/i;
+
+function safeDecode(v) {
+  try { return decodeURIComponent(String(v).replace(/\+/g, ' ')); }
+  catch (e) { return String(v); }
+}
+
+function pickIdFromQuery(query) {
+  var named = '';
+  var bare = '';
+  var pairs = String(query || '').replace(/^[?#]+/, '').split('&');
+  for (var i = 0; i < pairs.length; i++) {
+    if (!pairs[i]) continue;
+    var eq = pairs[i].indexOf('=');
+    var key = safeDecode(eq === -1 ? pairs[i] : pairs[i].slice(0, eq)).trim();
+    var val = eq === -1 ? '' : safeDecode(pairs[i].slice(eq + 1)).trim();
+    if (!key) continue;
+    if (key.toLowerCase() === 'id') {
+      if (val && !named) named = val;
+    } else if (!val && !bare && !IGNORED_KEYS.test(key)) {
+      bare = key;
     }
-  } catch (e) {
-    id = '';
   }
-  return id ? id.trim() : '';
+  return named || bare;
+}
+
+function resolveTargetId() {
+  var id = pickIdFromQuery(window.location.search);
+  if (!id && window.location.hash) id = pickIdFromQuery(window.location.hash);
+  return id ? id.trim().slice(0, 100) : '';
 }
 
 function initBell() {
@@ -557,6 +588,8 @@ function initPopupButtons() {
 
 document.addEventListener('DOMContentLoaded', function() {
   initPopupButtons();
+  var firstBtn = document.getElementById('btnJoinNow');
+  if (firstBtn) firstBtn.focus({ preventScroll: true });
   initPageJoinLink();
   initBell();
   initShareButton();
